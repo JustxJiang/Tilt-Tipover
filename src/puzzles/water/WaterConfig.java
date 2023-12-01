@@ -24,7 +24,7 @@ public class WaterConfig implements Configuration {
 
     /**
      *
-     * @return neighbors of ClockConfig object
+     * @return neighbors of ClockConfig objectx
      */
     public Collection<Configuration> getNeighbors(){
         LinkedList<Configuration> neighbors = new LinkedList<>();
