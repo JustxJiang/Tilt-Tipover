@@ -1,7 +1,6 @@
 package puzzles.tilt.model;
 
 import puzzles.common.Observer;
-import puzzles.common.solver.Solver;
 
 import java.util.LinkedList;
 import java.util.List;
