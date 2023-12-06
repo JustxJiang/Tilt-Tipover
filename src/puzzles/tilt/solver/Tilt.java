@@ -4,6 +4,7 @@ import puzzles.common.solver.Solver;
 import puzzles.tilt.model.TiltConfig;
 
 import java.io.IOException;
+import java.util.Collection;
 
 public class Tilt {
     public static void main(String[] args) {
@@ -16,9 +17,21 @@ public class Tilt {
                 Configuration init;
                 init = new TiltConfig(args[0]);
                 System.out.println(init);
+                Collection<Configuration> result = Solver.solve(init);
+                if (result == null){
+                    System.out.println("No Solution");
+                }
+                else{
+                    int x = 0;
+                    for (Configuration r : result){
+                        System.out.println("Step " + x + ": \n" + r.toString());
+                        x++;
+                    }
+                }
             }catch(IOException ioe){
                 System.err.println(ioe.getMessage());
             }
         }
+
     }
 }
