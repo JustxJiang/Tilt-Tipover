@@ -4,96 +4,172 @@ import puzzles.clock.ClockConfig;
 import puzzles.common.solver.Configuration;
 
 import java.awt.image.TileObserver;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedList;
 
 // TODO: implement your TiltConfig for the common solver
 public class TiltConfig implements Configuration{
     private int dimensions;
     private char[][] grid;
-    private int[] greenCursor = new int[2];
-    private int[] hole = new int[2];
-    private LinkedList<int[]> blueCursor = new LinkedList<>();
-    private LinkedList<int[]> blocker = new LinkedList<>();
+    private int blueCounter = 0;
 
     public TiltConfig(String filename) throws IOException{
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             String[] fields = in.readLine().split("\\s+");
             this.dimensions = Integer.parseInt(fields[0]);
             this.grid = new char[dimensions][dimensions];
-            for (int j = 0; j < grid.length; j++) {
+            for (int j = 0; j < dimensions; j++) {
                 fields = in.readLine().split("\\s+");
-                for (int k = 0; k < grid[j].length; k++) {
+                for (int k = 0; k < dimensions; k++) {
                     grid[j][k] = (fields[k].charAt(0));
-                }
-            }
-
-            for (int i=0; i<grid.length; i++){
-                for (int j=0; j < grid[0].length; j++){
-                    switch(getVal(i,j)){
-                    case 'G':
-                        this.greenCursor[0] = i;
-                        this.greenCursor[1]=i;
-                    case 'B':
-                        int[] blue = new int[2];
-                        blue[0] = i;
-                        blue[1] = j;
-                        blueCursor.add(blue);
-                    case '*':
-                        int[] block = new int[2];
-                        block[0] = i;
-                        block[1] = j;
-                        this.blocker.add(block);
-                    case 'O':
-                        this.hole[0] = i;
-                        this.hole[1] = j;
+                    if (grid[j][k] == 'B'){
+                        blueCounter++;
                     }
-
                 }
             }
         }
     }
 
     protected TiltConfig(TiltConfig other, String direction){
-        this.grid = new char[grid.length][grid.length];
-        for (int i =0; i < grid.length; i++) {
+        this.dimensions = other.grid.length;
+        this.grid = new char[getDimensions()][getDimensions()];
+        for (int i =0; i < getDimensions(); i++) {
             System.arraycopy(other.grid[i], 0, this.grid[i], 0, grid.length);
         }
+        boolean hasMoved = true;
         switch(direction){
-            case "r++":
+            case "up":
+                while(hasMoved){
+                    for (int i =0; i < getDimensions(); i++){
+                        for (int j = 0; j < getDimensions(); j++){
+                            if ((i-1 >= 0) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                                char temp = getVal(i,j);
+                                switch(getVal(i-1, j)){
+                                    case '.':
+                                        this.grid[i][j] = '.';
+                                        this.grid[i-1][j] = temp;
+                                        break; //remember to break in cases cuz if not it will still loop through all the cases
+                                    case 'O':
+                                        this.grid[i][j] = '.';
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    hasMoved = false;
+                }
 
+            case "down":
+                while(hasMoved){
+                    for (int i =0; i < getDimensions(); i++){
+                        for (int j = 0; j < getDimensions(); j++){
+                            if ((i+1 < getDimensions()) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                                char temp = getVal(i,j);
+                                switch(getVal(i+1, j)){
+                                    case '.':
+                                        this.grid[i][j] = '.';
+                                        this.grid[i+1][j] = temp;
+                                        break; //remember to break in cases cuz if not it will still loop through all the cases
+                                    case 'O':
+                                        this.grid[i][j] = '.';
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    hasMoved = false;
+                }
+            case "left":
+                while(hasMoved){
+                    for (int i =0; i < getDimensions(); i++){
+                        for (int j = 0; j < getDimensions(); j++){
+                            if ((j-1 >= 0) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                                char temp = getVal(i,j);
+                                switch(getVal(i, j-1)){
+                                    case '.':
+                                        this.grid[i][j] = '.';
+                                        this.grid[i][j-1] = temp;
+                                        break; //remember to break in cases cuz if not it will still loop through all the cases
+                                    case 'O':
+                                        this.grid[i][j] = '.';
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    hasMoved = false;
+                }
+            case "right":
+                while(hasMoved){
+                    for (int i =0; i < getDimensions(); i++){
+                        for (int j = 0; j < getDimensions(); j++){
+                            if ((j+1 < getDimensions()) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                                char temp = getVal(i,j);
+                                switch(getVal(i, j+1)){
+                                    case '.':
+                                        this.grid[i][j] = '.';
+                                        this.grid[i][j+1] = temp;
+                                        break; //remember to break in cases cuz if not it will still loop through all the cases
+                                    case 'O':
+                                        this.grid[i][j] = '.';
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    hasMoved = false;
+                }
         }
+    }
+
+    public int getDimensions(){
+        return this.dimensions;
     }
 
     @Override
     public boolean isSolution() {
-        return false;
+        for (int i =0; i < getDimensions(); i++){
+            for (int j = 0; j < getDimensions(); j++){
+                if ((getVal(i,j) == 'G')) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
+
+
 
     @Override
     public Collection<Configuration> getNeighbors() {
         LinkedList<Configuration> neighbors = new LinkedList<>();
 
-        neighbors.add(new TiltConfig(this, "r++"));
-        neighbors.add(new TiltConfig(this, "r--"));
-        neighbors.add(new TiltConfig(this, "c++"));
-        neighbors.add(new TiltConfig(this, "c--"));
+        neighbors.add(new TiltConfig(this, "up"));
+        neighbors.add(new TiltConfig(this, "down"));
+        neighbors.add(new TiltConfig(this, "left"));
+        neighbors.add(new TiltConfig(this, "right"));
 
+        // removes neighbor if there are not enough blues
+
+        for (int k = 0; k < neighbors.size(); k++) {
+            Configuration n = neighbors.get(k);
+             int counter = 0;
+            for (int i =0; i < getDimensions(); i++){
+                for (int j = 0; j < getDimensions(); j++){
+                    if ((getVal(i,j) == 'B')){
+                        counter++;
+                    }
+                }
+            }
+            if(blueCounter != counter){
+                neighbors.remove(k);
+                k--;
+            }
+        }
         return neighbors;
 
-    }
-
-    /**
-     *
-     * @return number of rows/cols
-     */
-    public int getDimensions() {
-        return this.dimensions;
     }
 
 
@@ -107,23 +183,20 @@ public class TiltConfig implements Configuration{
         return grid[row][col];
     }
 
-    /**
-     * @return current position of green tile
-     */
 
-    public int[] getGreenCursor() {
-        return this.greenCursor;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TiltConfig that = (TiltConfig) o;
+        return dimensions == that.dimensions && blueCounter == that.blueCounter && Arrays.deepEquals(grid, that.grid);
     }
-
-
 
     @Override
     public int hashCode() {
-        int hash = getGreenCursor()[0] + getGreenCursor()[1];
-        for (int[] blue : this.blueCursor){
-            hash += blue[0] + blue[1];
-        }
-        return hash;
+        int result = Objects.hash(dimensions, blueCounter);
+        result = 31 * result + Arrays.deepHashCode(grid);
+        return result;
     }
 
     @Override

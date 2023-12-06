@@ -49,7 +49,6 @@ public class Solver {
      */
     public static List<Configuration> buildPathBFS(Configuration curr, HashMap<Configuration, Configuration> pred){
         List<Configuration> path = new LinkedList<>();
-        System.out.println(pred);
         while (curr != null){
             path.add(0, curr);
             curr = pred.get(curr);
