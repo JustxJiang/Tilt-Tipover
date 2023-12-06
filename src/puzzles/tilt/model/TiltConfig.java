@@ -186,8 +186,12 @@ public class TiltConfig implements Configuration{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
         TiltConfig that = (TiltConfig) o;
         return dimensions == that.dimensions && blueCounter == that.blueCounter && Arrays.deepEquals(grid, that.grid);
     }
