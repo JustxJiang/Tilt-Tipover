@@ -59,21 +59,21 @@ public class TipOverConfig implements Configuration {
         {
             System.arraycopy(other.puzzleGrid[i], 0, this.puzzleGrid[i], 0, getCols());
         }
-        if((int)this.puzzleGrid[tipper.x][tipper.y] > 1) {
+        if((int)this.getVal(tipper.x,tipper.y) > 1) {
             onTower = true;
         }
         switch(direction) {
             case "up":
                 if(onTower) {
                     boolean valid = true;
-                    int towerHeight = (int)this.puzzleGrid[tipper.x][tipper.y];
+                    int towerHeight = (int)this.getVal(tipper.x,tipper.y);
                     //Tests in bounds
                     if(tipper.x - (towerHeight + 1) < 0) {
                         valid = false;
                     }
                     //Tests for obstruction
                     for(int test = 0; test <= towerHeight; test++) {
-                        if((int)this.puzzleGrid[tipper.x + test][tipper.y] > 0) {
+                        if((int)this.getVal(tipper.x + test,tipper.y) > 0) {
                             valid = false;
                             break;
                         }
@@ -87,7 +87,10 @@ public class TipOverConfig implements Configuration {
                     }
                 }
                 else {
-                    if(this.puzzleGrid)
+                    if(getVal(tipper.x-1,tipper.y) > 0)
+                    {
+                        tipper.x--;
+                    }
                 }
 
                 break;
