@@ -24,7 +24,7 @@ public class Tilt {
                 else{
                     int x = 0;
                     for (Configuration r : result){
-                        System.out.println("Step " + x + ": \n" + r.toString());
+                        System.out.println("\nStep " + x + ":\n" + r );
                         x++;
                     }
                 }
