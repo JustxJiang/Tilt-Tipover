@@ -1,7 +1,9 @@
 package puzzles.tilt.gui;
 
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import puzzles.common.Observer;
 import puzzles.tilt.model.TiltModel;
 
@@ -23,6 +25,16 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
     @Override
     public void start(Stage stage) throws Exception {
+
+        BorderPane borderPane = new BorderPane();
+        FlowPane top = new FlowPane();
+        BorderPane middle = new BorderPane();
+        Label arrow = new Label("^");
+        Button up = new Button("^");
+        Button down = new Button();
+        Button left = new Button("<");
+        Button right = new Button(">");
+
         Button button = new Button();
         button.setGraphic(new ImageView(greenDisk));
         Scene scene = new Scene(button);
