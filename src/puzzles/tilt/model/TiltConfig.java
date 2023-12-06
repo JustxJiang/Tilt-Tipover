@@ -3,6 +3,7 @@ package puzzles.tilt.model;
 import puzzles.clock.ClockConfig;
 import puzzles.common.solver.Configuration;
 
+import java.awt.image.TileObserver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.io.BufferedReader;
@@ -17,8 +18,8 @@ public class TiltConfig implements Configuration{
     private char[][] grid;
     private int[] greenCursor = new int[2];
     private int[] hole = new int[2];
-    private ArrayList<int[]> blueCursor = new ArrayList<>();
-    private ArrayList<int[]> blocker = new ArrayList<>();
+    private LinkedList<int[]> blueCursor = new LinkedList<>();
+    private LinkedList<int[]> blocker = new LinkedList<>();
 
     public TiltConfig(String filename) throws IOException{
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
@@ -58,17 +59,16 @@ public class TiltConfig implements Configuration{
         }
     }
 
-//    public TiltConfig(char[][] grid, ArrayList<Integer> green, ArrayList<Integer>blue) throws IOException{
-//            this.dimensions = grid.length;
-//            this.grid = grid;
-//            for (int i=0; i<grid.length; i++){
-//                for (int j=0; j < grid[0].length; j++){
-//                    if ((grid[i][j] == 'G') || (grid[i][j] == 'B')) {
-//                        grid[i][j] = '.';
-//                    }
-//                }
-//            }
-//    }
+    protected TiltConfig(TiltConfig other, String direction){
+        this.grid = new char[grid.length][grid.length];
+        for (int i =0; i < grid.length; i++) {
+            System.arraycopy(other.grid[i], 0, this.grid[i], 0, grid.length);
+        }
+        switch(direction){
+            case "r++":
+
+        }
+    }
 
     @Override
     public boolean isSolution() {
@@ -77,22 +77,15 @@ public class TiltConfig implements Configuration{
 
     @Override
     public Collection<Configuration> getNeighbors() {
-        HashSet<Configuration> neighbors = new HashSet<>();
-        //if statements? or is that too long?
-        int counter = 0;
-        while(counter<4){
-            int tiltCounter =0;
-            while(tiltCounter<getDimensions()){
-                if(getGreenCursor()[0])
-            }
-            counter++;
-        }
-//        neighbors.add(new TiltConfig(n1));
-//        neighbors.add(new TiltConfig(n2));
-//        neighbors.add(new TiltConfig(n3));
-//        neighbors.add(new TiltConfig(n4));
+        LinkedList<Configuration> neighbors = new LinkedList<>();
+
+        neighbors.add(new TiltConfig(this, "r++"));
+        neighbors.add(new TiltConfig(this, "r--"));
+        neighbors.add(new TiltConfig(this, "c++"));
+        neighbors.add(new TiltConfig(this, "c--"));
+
         return neighbors;
-        //move green and blue one space until they hit the edge or if blue/green cant move anymore or if it hits a blocker
+
     }
 
     /**
