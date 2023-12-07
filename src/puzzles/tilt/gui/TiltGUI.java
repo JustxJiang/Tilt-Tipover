@@ -15,12 +15,18 @@ import javafx.scene.control.Button;
 public class TiltGUI extends Application implements Observer<TiltModel, String> {
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
-
+    private TiltModel model;
+    private Button[][] buttons;
     // for demonstration purposes
     private Image greenDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green.png"));
 
     public void init() {
         String filename = getParameters().getRaw().get(0);
+    }
+    public TiltGUI() {
+        model = new TiltModel()Model();
+        model.addObserver(this);
+        buttons = new Button[model.getDimension()][model.getDimension()];
     }
 
     @Override
@@ -28,12 +34,31 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
         BorderPane borderPane = new BorderPane();
         FlowPane top = new FlowPane();
+        borderPane.setTop(top);
+
         BorderPane middle = new BorderPane();
-        Label arrow = new Label("^");
-        Button up = new Button("^");
-        Button down = new Button();
-        Button left = new Button("<");
-        Button right = new Button(">");
+        middle.setTop(new Button("^"));
+        middle.setBottom(new Button("v"));
+        middle.setLeft(new Button("<"));
+        middle.setRight(new Button(">"));
+
+        GridPane center = new GridPane();
+        for (int r = 0; r < model.getDimension(); r++){
+            for (int c = 0; c < model.getDimension(); c++){
+                buttons[c][r] = new Button();
+                buttons[c][r].setMinSize(50,50);
+                buttons[c][r].setStyle("-fx-background-color: #ffffff");
+                int finalC = c;
+                int finalR = r;
+                buttons[c][r].setOnAction(e ->{
+                    model.toggleTile(finalC, finalR);
+                    if(!model.gameOver()){
+                        message.setText("Message: Move: " + finalC + ", " + finalR);
+                    }
+                });
+                center.add(buttons[c][r], c, r);
+            }
+        }
 
         Button button = new Button();
         button.setGraphic(new ImageView(greenDisk));
