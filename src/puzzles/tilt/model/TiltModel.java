@@ -11,6 +11,16 @@ public class TiltModel {
 
     /** the current configuration */
     private TiltConfig currentConfig;
+    private int moves;
+
+    public TiltModel(){
+        moves = 0;
+        observers = new LinkedList<>();
+        currentConfig = new TiltConfig();
+    }
+    public int getDimensions(){
+        return currentConfig.getDimensions();
+    }
 
     /**
      * The view calls this to add itself as an observer.

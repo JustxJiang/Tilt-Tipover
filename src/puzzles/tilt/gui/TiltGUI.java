@@ -24,7 +24,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         String filename = getParameters().getRaw().get(0);
     }
     public TiltGUI() {
-        model = new TiltModel()Model();
+        model = new TiltModel();
         model.addObserver(this);
         buttons = new Button[model.getDimension()][model.getDimension()];
     }
