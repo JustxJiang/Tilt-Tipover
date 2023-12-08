@@ -1,9 +1,15 @@
 package puzzles.tilt.model;
 
+import puzzles.common.Coordinates;
 import puzzles.common.Observer;
+import puzzles.common.solver.Configuration;
+import puzzles.common.solver.Solver;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
 
 public class TiltModel {
     /** the collection of observers of this model */
@@ -11,12 +17,144 @@ public class TiltModel {
 
     /** the current configuration */
     private TiltConfig currentConfig;
-    private int moves;
+    private TiltConfig temp;
+    private String file;
+    public static String HINT_PREFIX = "Next Step!";
+    public static String LOAD_FAILED = "Load Failed";
+    public static String LOADED = "loaded";
 
-    public TiltModel(){
-        moves = 0;
-        observers = new LinkedList<>();
-        currentConfig = new TiltConfig();
+    public TiltModel(String filename) {
+        try {
+            currentConfig = new TiltConfig(filename);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public boolean loadBoardFromFile(String filename) {
+        file = filename;
+        try{
+            currentConfig = new TiltConfig(filename);
+            announce(LOADED);
+            return true;
+        }
+        catch (IOException e) {
+            announce(LOAD_FAILED);
+            return false;
+        }
+    }
+
+    public void getHint(){
+        Collection<Configuration> hint = Solver.solve(currentConfig);
+        String direction = ((TiltConfig) hint.toArray()[1]).getLastMove();
+        switch(direction){
+            case "UP":
+                tiltUp();
+                break;
+            case "DOWN":
+                tiltDown();
+                break;
+            case "LEFT":
+                tiltLeft();
+                break;
+            case "RIGHT":
+                tiltRight();
+        }
+    }
+
+    public void tiltUp(){
+        temp = currentConfig;
+        currentConfig.tiltUp();
+        alertObservers("Tilt Up");
+
+        int counter = 0;
+        for (int i =0; i < currentConfig.getDimensions(); i++){
+            for (int j = 0; j < currentConfig.getDimensions(); j++){
+                if (currentConfig.getVal(i,j) == 'B'){
+                    counter++;
+                }
+            }
+        }
+
+        if(TiltConfig.getBlueCounter() != counter){
+            announce("Illegal Move");
+            currentConfig = temp;
+        }
+    }
+
+    public char getCell(int row, int col) {
+        return currentConfig.getVal(row, col);
+    }
+
+    public void tiltDown(){
+        temp = currentConfig;
+        currentConfig.tiltDown();
+        alertObservers("Tilt Down");
+
+        int counter = 0;
+        for (int i =0; i < currentConfig.getDimensions(); i++){
+            for (int j = 0; j < currentConfig.getDimensions(); j++){
+                if (currentConfig.getVal(i,j) == 'B'){
+                    counter++;
+                }
+            }
+        }
+
+        if(TiltConfig.getBlueCounter() != counter) {
+            announce("Illegal Move");
+            currentConfig = temp;
+        }
+    }
+    public void tiltLeft(){
+        temp = currentConfig;
+        currentConfig.tiltLeft();
+        alertObservers("Tilt Left");
+
+        int counter = 0;
+        for (int i =0; i < currentConfig.getDimensions(); i++){
+            for (int j = 0; j < currentConfig.getDimensions(); j++){
+                if (currentConfig.getVal(i,j) == 'B'){
+                    counter++;
+                }
+            }
+        }
+
+        if(TiltConfig.getBlueCounter() != counter){
+            announce("Illegal Move");
+            currentConfig = temp;
+        }
+
+    }
+    public void tiltRight(){
+        temp = currentConfig;
+        currentConfig.tiltRight();
+        alertObservers("Tilt Right");
+
+        int counter = 0;
+        for (int i =0; i < currentConfig.getDimensions(); i++){
+            for (int j = 0; j < currentConfig.getDimensions(); j++){
+                if (currentConfig.getVal(i,j) == 'B'){
+                    counter++;
+                }
+            }
+        }
+
+        if(TiltConfig.getBlueCounter() != counter){
+            announce("Illegal Move");
+            currentConfig = temp;
+        }
+    }
+
+    public void reset(){
+        loadBoardFromFile(file);
+    }
+
+    public boolean gameOver(){
+        if(currentConfig.isSolution()){
+            return true;
+        }
+        return false;
     }
     public int getDimensions(){
         return currentConfig.getDimensions();
@@ -30,7 +168,11 @@ public class TiltModel {
     public void addObserver(Observer<TiltModel, String> observer) {
         this.observers.add(observer);
     }
-
+    private void announce(String arg){
+        for( var obs : this.observers){
+            obs.update(this, arg);
+        }
+    }
     /**
      * The model's state has changed (the counter), so inform the view via
      * the update method
