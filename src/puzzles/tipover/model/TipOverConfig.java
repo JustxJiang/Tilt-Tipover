@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -105,7 +106,7 @@ public class TipOverConfig implements Configuration {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x,tipper.y));
                     //Tests in bounds
-                    if(tipper.x - (towerHeight + 1) < 0) {
+                    if(tipper.x - (towerHeight) < 0) {
                         valid = false;
                     }
                     else {
@@ -120,18 +121,17 @@ public class TipOverConfig implements Configuration {
                     if(valid) {
                         this.puzzleGrid[tipper.x][tipper.y] = '0';
                         this.tipper.x--;
-                        for(int set = 0; set <= towerHeight; ++set) {
+                        for(int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x-set][tipper.y] = '1';
                         }
                     }
                     else if(tipper.x-1 >= 0) {
-                            if (Character.getNumericValue(this.getVal(tipper.x - 1, tipper.y)) > 0) {
-                                tipper.x--;
-                            } else
-                            {
-                                this.isValid = false;
-                            }
+                        if (Character.getNumericValue(this.getVal(tipper.x - 1, tipper.y)) > 0) {
+                            tipper.x--;
+                        } else {
+                            this.isValid = false;
                         }
+                    }
                     else
                     {
                         this.isValid = false;
@@ -158,7 +158,7 @@ public class TipOverConfig implements Configuration {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x,tipper.y));
                     //Tests in bounds
-                    if(tipper.x + (towerHeight + 1) > this.puzzleCols) {
+                    if(tipper.x + (towerHeight) >= this.puzzleRows) {
                         valid = false;
                     }
                     else {
@@ -173,7 +173,7 @@ public class TipOverConfig implements Configuration {
                     if(valid) {
                         this.puzzleGrid[tipper.x][tipper.y] = '0';
                         this.tipper.x++;
-                        for(int set = 0; set <= towerHeight; ++set) {
+                        for(int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x+set][tipper.y] = '1';
                         }
                     } else if(tipper.x+1 < this.getRows()) {
@@ -211,7 +211,7 @@ public class TipOverConfig implements Configuration {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x,tipper.y));
                     //Tests in bounds
-                    if(tipper.y - (towerHeight + 1) < 0) {
+                    if(tipper.y - (towerHeight) < 0) {
                         valid = false;
                     }
                     else {
@@ -226,7 +226,7 @@ public class TipOverConfig implements Configuration {
                     if(valid) {
                         this.puzzleGrid[tipper.x][tipper.y] = '0';
                         this.tipper.y--;
-                        for(int set = 0; set <= towerHeight; ++set) {
+                        for(int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x][tipper.y-set] = '1';
                         }
                     } else if(tipper.y-1 >= 0) {
@@ -261,7 +261,7 @@ public class TipOverConfig implements Configuration {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x,tipper.y));
                     //Tests in bounds
-                    if(tipper.y + (towerHeight + 1) > this.puzzleRows) {
+                    if(tipper.y + (towerHeight) >= this.puzzleCols) {
                         valid = false;
                     }
                     else {
@@ -276,7 +276,7 @@ public class TipOverConfig implements Configuration {
                     if(valid) {
                         this.puzzleGrid[tipper.x][tipper.y] = '0';
                         this.tipper.y++;
-                        for(int set = 0; set <= towerHeight; ++set) {
+                        for(int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x][tipper.y+set] = '1';
                         }
                     } else if(tipper.y+1 < this.getCols()) {
