@@ -10,8 +10,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class TipOverConfig implements Configuration {
     private int puzzleRows;
@@ -51,10 +53,29 @@ public class TipOverConfig implements Configuration {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TipOverConfig that = (TipOverConfig) o;
+        return puzzleRows == that.puzzleRows && puzzleCols == that.puzzleCols && Arrays.equals(puzzleGrid, that.puzzleGrid) && Objects.equals(start, that.start) && Objects.equals(end, that.end) && Objects.equals(tipper, that.tipper);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(puzzleRows, puzzleCols, start, end, tipper);
+        result = 31 * result + Arrays.hashCode(puzzleGrid);
+        return result;
+    }
+
     public TipOverConfig(TipOverConfig other, String direction)
     {
         boolean onTower = false;
+        this.puzzleRows = other.getRows();
+        this.puzzleCols = other.getCols();
         this.puzzleGrid = new char[this.getRows()][this.getCols()];
+
+
         for(int i = 0; i < getRows(); i++)
         {
             System.arraycopy(other.puzzleGrid[i], 0, this.puzzleGrid[i], 0, getCols());
@@ -71,11 +92,13 @@ public class TipOverConfig implements Configuration {
                     if(tipper.x - (towerHeight + 1) < 0) {
                         valid = false;
                     }
-                    //Tests for obstruction
-                    for(int test = 0; test <= towerHeight; test++) {
-                        if((int)this.getVal(tipper.x + test,tipper.y) > 0) {
-                            valid = false;
-                            break;
+                    else {
+                        //Tests for obstruction
+                        for (int test = 0; test <= towerHeight; test++) {
+                            if ((int) this.getVal(tipper.x - test, tipper.y) > 0) {
+                                valid = false;
+                                break;
+                            }
                         }
                     }
                     if(valid) {
@@ -87,21 +110,95 @@ public class TipOverConfig implements Configuration {
                     }
                 }
                 else {
-                    if(getVal(tipper.x-1,tipper.y) > 0)
-                    {
-                        tipper.x--;
-                    }
+                        this.tipper.x--;
                 }
-
                 break;
             case "down":
-
+                if(onTower) {
+                    boolean valid = true;
+                    int towerHeight = (int)this.getVal(tipper.x,tipper.y);
+                    //Tests in bounds
+                    if(tipper.x + (towerHeight + 1) > this.puzzleCols) {
+                        valid = false;
+                    }
+                    else {
+                        //Tests for obstruction
+                        for (int test = 0; test <= towerHeight; test++) {
+                            if ((int) this.getVal(tipper.x + test, tipper.y) > 0) {
+                                valid = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(valid) {
+                        this.puzzleGrid[tipper.x][tipper.y] = '0';
+                        this.tipper.x++;
+                        for(int set = 0; set <= towerHeight; ++set) {
+                            this.puzzleGrid[tipper.x+set][tipper.y] = '1';
+                        }
+                    }
+                }
+                else {
+                    this.tipper.x++;
+                }
                 break;
             case "left":
-
+                if(onTower) {
+                    boolean valid = true;
+                    int towerHeight = (int)this.getVal(tipper.x,tipper.y);
+                    //Tests in bounds
+                    if(tipper.y - (towerHeight + 1) < 0) {
+                        valid = false;
+                    }
+                    else {
+                        //Tests for obstruction
+                        for (int test = 0; test <= towerHeight; test++) {
+                            if ((int) this.getVal(tipper.x, tipper.y - test) > 0) {
+                                valid = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(valid) {
+                        this.puzzleGrid[tipper.x][tipper.y] = '0';
+                        this.tipper.y--;
+                        for(int set = 0; set <= towerHeight; ++set) {
+                            this.puzzleGrid[tipper.x][tipper.y-set] = '1';
+                        }
+                    }
+                }
+                else {
+                    this.tipper.y--;
+                }
                 break;
             case "right":
-
+                if(onTower) {
+                    boolean valid = true;
+                    int towerHeight = (int)this.getVal(tipper.x,tipper.y);
+                    //Tests in bounds
+                    if(tipper.y + (towerHeight + 1) > this.puzzleRows) {
+                        valid = false;
+                    }
+                    else {
+                        //Tests for obstruction
+                        for (int test = 0; test <= towerHeight; test++) {
+                            if ((int) this.getVal(tipper.x, tipper.y + test) > 0) {
+                                valid = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(valid) {
+                        this.puzzleGrid[tipper.x][tipper.y] = '0';
+                        this.tipper.y++;
+                        for(int set = 0; set <= towerHeight; ++set) {
+                            this.puzzleGrid[tipper.x][tipper.y+set] = '1';
+                        }
+                    }
+                }
+                else {
+                    this.tipper.y++;
+                }
                 break;
         }
     }
@@ -120,17 +217,16 @@ public class TipOverConfig implements Configuration {
         neighbors.add(new TipOverConfig(this, "left"));
         neighbors.add(new TipOverConfig(this, "right"));
 
+
+        for (int k = 0; k < neighbors.size(); k++) {
+            TipOverConfig current = (TipOverConfig) neighbors.get(k);
+            if(current.getVal(tipper.x, tipper.y) == 0)
+            {
+                neighbors.remove(k);
+                k--;
+            }
+        }
         return neighbors;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
     }
 
     public int getRows() {
@@ -152,6 +248,17 @@ public class TipOverConfig implements Configuration {
 
         for (int row=0; row<getRows(); ++row) {
             for (int col=0; col<getCols(); ++col) {
+                if(row == tipper.x && col == tipper.y)
+                {
+                    result.append("*");
+                }
+                else if(row == end.x && col == end.y)
+                {
+                    result.append("!");
+                }
+                else {
+                    result.append(" ");
+                }
                 result.append(getVal(row, col)).append(" ");
             }
             if (row != getRows()-1) {
