@@ -76,11 +76,8 @@ public class TipOverConfig implements Configuration {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(puzzleGrid) + Objects.hashCode(tipper.x) + Objects.hashCode(tipper.y);
-//        int result = Objects.hash(puzzleRows, puzzleCols, start, end, tipper);
-//        result = 31 * result + Arrays.hashCode(puzzleGrid);
-//        return result;
     }
-
+    //This might be the worst code I've ever written
     public TipOverConfig(TipOverConfig other, String direction)
     {
         boolean onTower = false;
@@ -307,8 +304,6 @@ public class TipOverConfig implements Configuration {
                 }
                 break;
         }
-//        System.out.println("\n\n");
-//        System.out.println(this);
     }
 
     @Override
@@ -318,11 +313,7 @@ public class TipOverConfig implements Configuration {
 
     @Override
     public Collection<Configuration> getNeighbors() {
-        System.out.println("===============================\nCURRENT:");
-        System.out.println(this);
-        System.out.println("NEIGHBORS:");
         LinkedList<Configuration> neighbors = new LinkedList<>();
-        //System.out.println(this.tipper);
         String[] directions = {"up", "down", "left", "right"};
         for (String direction : directions) {
             TipOverConfig config = new TipOverConfig(this, direction);
@@ -330,10 +321,6 @@ public class TipOverConfig implements Configuration {
                 neighbors.add(config);
             }
         }
-
-        System.out.println(neighbors.size() + "\n\n");
-        System.out.println(neighbors);
-
         return neighbors;
     }
 
