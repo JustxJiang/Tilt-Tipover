@@ -22,9 +22,10 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         model = new TiltModel(filename);
         model.addObserver(this);
         in = new Scanner(System.in);
+        gameOn = false;
     }
 
-    public boolean loadFromFile(String file){
+    public boolean loadFromFile(){
         boolean ready = false;
 
         while(!ready){
@@ -34,8 +35,9 @@ public class TiltPTUI implements Observer<TiltModel, String> {
                 System.out.println("going back...");
                 return false;
             }
-            ready = model.loadBoardFromFile(command);
-
+            else {
+                ready = model.loadBoardFromFile(command);
+            }
 
         }
         return true;
@@ -50,22 +52,22 @@ public class TiltPTUI implements Observer<TiltModel, String> {
             switch (command){
                 case "L":
                 case "l":
-                    loadFromFile(command);
+                    ready = loadFromFile();
                     break;
                 case "Q":
                 case "q":
                     System.out.println("Exiting");
                     in = new Scanner(System.in);//get rid of any remaining commands from the start menu
+                    ready = true;
                     return false;
 
                 default:
-                    System.out.println("Enter R, L, or Q.");
+                    System.out.println("Enter L or Q.");
             }
             gameOn = true;
-            in = new Scanner(System.in);//get rid of any remaining commands from the start menu
-            return true;
         }
-        return ready;
+        in = new Scanner(System.in);//get rid of any remaining commands from the start menu
+        return true;
     }
 
     public void run(){
@@ -90,8 +92,9 @@ public class TiltPTUI implements Observer<TiltModel, String> {
 
                 return;
 
-            } else if (command.equals("h") || command.equals("H")) {
+            }else if (command.equals("h") || command.equals("H")) {
                 model.getHint();
+                displayBoard();
 
             }else if(command.equals("r") || command.equals("R")){
                 model.reset();
@@ -112,6 +115,7 @@ public class TiltPTUI implements Observer<TiltModel, String> {
                         case "right":
                             model.tiltRight();
                     }
+                    displayBoard();
 
                 } catch (InputMismatchException e) {
 
@@ -132,8 +136,9 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         //prints the tiles
         for (int r = 0; r < model.getDimensions(); r++){
             for (int c = 0; c < model.getDimensions(); c++){
-                System.out.print(model.getCell(r,c));
+                System.out.print(model.getCell(r,c) +  " ");
             }
+            System.out.println();
         }
     }
 

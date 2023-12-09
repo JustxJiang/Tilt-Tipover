@@ -36,11 +36,11 @@ public class TiltModel {
         file = filename;
         try{
             currentConfig = new TiltConfig(filename);
-            announce(LOADED);
+            alertObservers(LOADED);
             return true;
         }
         catch (IOException e) {
-            announce(LOAD_FAILED);
+            alertObservers(LOAD_FAILED);
             return false;
         }
     }
@@ -66,7 +66,6 @@ public class TiltModel {
     public void tiltUp(){
         temp = currentConfig;
         currentConfig.tiltUp();
-        alertObservers("Tilt Up");
 
         int counter = 0;
         for (int i =0; i < currentConfig.getDimensions(); i++){
@@ -78,8 +77,12 @@ public class TiltModel {
         }
 
         if(TiltConfig.getBlueCounter() != counter){
-            announce("Illegal Move");
+            alertObservers("Illegal Move");
             currentConfig = temp;
+        }
+        else{
+            alertObservers("Tilt Up");
+
         }
     }
 
@@ -90,7 +93,6 @@ public class TiltModel {
     public void tiltDown(){
         temp = currentConfig;
         currentConfig.tiltDown();
-        alertObservers("Tilt Down");
 
         int counter = 0;
         for (int i =0; i < currentConfig.getDimensions(); i++){
@@ -102,14 +104,17 @@ public class TiltModel {
         }
 
         if(TiltConfig.getBlueCounter() != counter) {
-            announce("Illegal Move");
+            alertObservers("Illegal Move");
             currentConfig = temp;
         }
+        else{
+            alertObservers("Tilt Down");
+        }
+
     }
     public void tiltLeft(){
         temp = currentConfig;
         currentConfig.tiltLeft();
-        alertObservers("Tilt Left");
 
         int counter = 0;
         for (int i =0; i < currentConfig.getDimensions(); i++){
@@ -121,15 +126,17 @@ public class TiltModel {
         }
 
         if(TiltConfig.getBlueCounter() != counter){
-            announce("Illegal Move");
+            alertObservers("Illegal Move");
             currentConfig = temp;
+        }
+        else{
+            alertObservers("Tilt Left");
         }
 
     }
     public void tiltRight(){
         temp = currentConfig;
         currentConfig.tiltRight();
-        alertObservers("Tilt Right");
 
         int counter = 0;
         for (int i =0; i < currentConfig.getDimensions(); i++){
@@ -141,8 +148,11 @@ public class TiltModel {
         }
 
         if(TiltConfig.getBlueCounter() != counter){
-            announce("Illegal Move");
+            alertObservers("Illegal Move");
             currentConfig = temp;
+        }
+        else{
+            alertObservers("Tilt Right");
         }
     }
 
@@ -167,11 +177,6 @@ public class TiltModel {
      */
     public void addObserver(Observer<TiltModel, String> observer) {
         this.observers.add(observer);
-    }
-    private void announce(String arg){
-        for( var obs : this.observers){
-            obs.update(this, arg);
-        }
     }
     /**
      * The model's state has changed (the counter), so inform the view via

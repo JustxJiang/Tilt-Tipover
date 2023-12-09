@@ -28,6 +28,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
     private Label message = new Label();
     private Image greenDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green.png"));
     private ImageView green = new ImageView(greenDisk);
+
     private Image blueDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"blue.png"));
     private ImageView blue = new ImageView(blueDisk);
 
@@ -44,8 +45,6 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         model = new TiltModel(filename);
         model.addObserver(this);
         buttons = new Button[model.getDimensions()][model.getDimensions()];
-    }
-    public TiltGUI() {
     }
 
     @Override
@@ -113,6 +112,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         center.setMinSize(250, 250);
         center.setPadding(new Insets(10,10,10,10));
         center.setAlignment(Pos.CENTER);
+        center.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         for (int y = 0; y < model.getDimensions(); y++){
             for (int x = 0; x < model.getDimensions(); x++){
                 buttons[x][y] = new Button();
