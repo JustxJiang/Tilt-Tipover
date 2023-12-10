@@ -64,7 +64,7 @@ public class TiltModel {
     }
 
     public void tiltUp(){
-        temp = currentConfig;
+        temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltUp();
 
         int counter = 0;
@@ -78,7 +78,7 @@ public class TiltModel {
 
         if(TiltConfig.getBlueCounter() != counter){
             alertObservers("Illegal Move");
-            currentConfig = temp;
+            currentConfig = new TiltConfig(temp, "none");
         }
         else{
             alertObservers("Tilt Up");
@@ -91,7 +91,7 @@ public class TiltModel {
     }
 
     public void tiltDown(){
-        temp = currentConfig;
+        temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltDown();
 
         int counter = 0;
@@ -105,7 +105,7 @@ public class TiltModel {
 
         if(TiltConfig.getBlueCounter() != counter) {
             alertObservers("Illegal Move");
-            currentConfig = temp;
+            currentConfig = new TiltConfig(temp, "none");
         }
         else{
             alertObservers("Tilt Down");
@@ -113,7 +113,7 @@ public class TiltModel {
 
     }
     public void tiltLeft(){
-        temp = currentConfig;
+        temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltLeft();
 
         int counter = 0;
@@ -127,7 +127,7 @@ public class TiltModel {
 
         if(TiltConfig.getBlueCounter() != counter){
             alertObservers("Illegal Move");
-            currentConfig = temp;
+            currentConfig = new TiltConfig(temp, "none");
         }
         else{
             alertObservers("Tilt Left");
@@ -135,7 +135,7 @@ public class TiltModel {
 
     }
     public void tiltRight(){
-        temp = currentConfig;
+        temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltRight();
 
         int counter = 0;
@@ -149,7 +149,7 @@ public class TiltModel {
 
         if(TiltConfig.getBlueCounter() != counter){
             alertObservers("Illegal Move");
-            currentConfig = temp;
+            currentConfig = new TiltConfig(temp, "none");
         }
         else{
             alertObservers("Tilt Right");

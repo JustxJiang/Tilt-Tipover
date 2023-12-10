@@ -65,6 +65,9 @@ public class TiltConfig implements Configuration{
             case "right":
                 tiltRight();
                 lastMove = directions.RIGHT;
+                break;
+            default:
+                lastMove = directions.NONE;
         }
     }
 

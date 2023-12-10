@@ -152,6 +152,13 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         } else if (message.startsWith(TiltModel.HINT_PREFIX)) { //Model is reporting a  hint
             System.out.println(message);
         }
+
+        if (model.gameOver()) { //checks if game is over.
+            displayBoard();
+
+            System.out.println("You win. Good for you.");
+            gameOn = false;
+        }
     }
     public static void main(String[] args) {
         if (args.length != 1) {
