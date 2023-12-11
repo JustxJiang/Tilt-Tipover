@@ -70,7 +70,7 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         return true;
     }
 
-    public void run(){
+    public void run() throws IOException {
         while (true){
             if(!(gameStart())){
                 break;
@@ -79,7 +79,7 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         }
     }
 
-    public void gameLoop(){
+    public void gameLoop() throws IOException {
         String msg;
 
         while(gameOn) {
@@ -151,6 +151,8 @@ public class TiltPTUI implements Observer<TiltModel, String> {
             System.out.println("Error Loading Game");
         } else if (message.startsWith(TiltModel.HINT_PREFIX)) { //Model is reporting a  hint
             System.out.println(message);
+        }else{
+            System.out.println(message);
         }
 
         if (model.gameOver()) { //checks if game is over.
@@ -160,7 +162,7 @@ public class TiltPTUI implements Observer<TiltModel, String> {
             gameOn = false;
         }
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length != 1) {
             System.out.println("Usage: java TiltPTUI filename");
         }
