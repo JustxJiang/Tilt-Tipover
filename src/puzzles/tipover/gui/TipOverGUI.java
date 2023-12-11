@@ -1,12 +1,14 @@
 package puzzles.tipover.gui;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import puzzles.common.Observer;
@@ -42,10 +44,13 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
             for(int col = 0; col < model.getCols(); col++)
             {
                 Label label = new Label(model.getVal(row, col) + "");
-                grid.add(label, row, col);
+                label.setFont(new Font(30));
+                grid.add(label, col, row);
             }
         }
-        //Code for bottom toolbar
+        grid.setPadding(new Insets(10));
+
+        //Code for toolbar
         GridPane toolbar = new GridPane();
         Button loadGame = new Button("Load Game");
         //Code for loading a board from a file
@@ -54,7 +59,7 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
             fileChooser.getExtensionFilters().addAll( new FileChooser.ExtensionFilter("Text Files", "*.lob"));
             //Tests for exception in case user closes file window
             try {
-                model.loadBoardFromFile(selectedFile);
+                //model.loadBoardFromFile();
                 updateBoard();
             }
             catch (NullPointerException e)
@@ -71,22 +76,47 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
         //Code for user hints
         hint.setOnAction((ActionEvent event) -> {
             if(!model.gameOver()) {
-
+                model.getHint();
             }
         });
+        GridPane buttons = new GridPane();
+        Button up = new Button("^");
+        up.setOnAction(e -> model.moveNorth());
+        Button down = new Button("v");
+        down.setOnAction(e -> model.moveSouth());
+        Button left = new Button("<");
+        left.setOnAction(e -> model.moveWest());
+        Button right = new Button(">");
+        right.setOnAction(e -> model.moveEast());
+
+
+        buttons.add(up, 1, 0);
+        buttons.add(down, 1, 2);
+        buttons.add(left, 0, 1);
+        buttons.add(right, 2, 1);
+        buttons.setAlignment(Pos.CENTER);
+
         toolbar.add(loadGame, 0, 0);
         toolbar.add(reset, 0, 1);
         toolbar.add(hint, 0, 2);
         toolbar.setAlignment(Pos.CENTER);
         //Code for program BorderPane
         BorderPane main = new BorderPane();
-        main.setTop(info);
+        main.setTop(message);
         main.setCenter(grid);
-        main.setBottom(toolbar);
+        GridPane sidebar = new GridPane();
+        sidebar.add(buttons, 0, 0);
+        sidebar.add(toolbar, 0, 1);
+        sidebar.setAlignment(Pos.CENTER);
+
+        main.setRight(sidebar);
+        main.setPadding(new Insets(10));
+        main.setMinSize(model.getRows()+100,model.getCols()+100);
+
         //Code to initialize scene
         Scene scene = new Scene(main);
         stage.setScene(scene);
-        stage.setTitle("Lights Out!");
+        stage.setTitle("Tip Over");
         stage.show();
     }
 
