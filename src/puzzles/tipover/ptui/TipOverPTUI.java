@@ -16,6 +16,7 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
     private TipOverModel model;
     private Scanner in;
     private boolean gameOn;
+    private String filename;
 
 
     public TipOverPTUI(String filename) {
@@ -26,7 +27,8 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
     }
 
     public void loadFromFile(String filename) {
-        model.loadBoardFromFile(filename);
+        model.loadBoardFromFile("data/tipover/" + filename);
+        this.filename = filename;
     }
 
 
@@ -61,21 +63,18 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
             }
             result.append("\n");
         }
-        System.out.println(model.toString());
         System.out.println(result);
     }
 
     private void gameLoop(){
-        String msg;
         displayBoard();
         System.out.println("h(int)              -- hint next move\n" +
                 "l(oad) filename     -- load new puzzle file\n" +
                 "m(ove) {N|S|E|W}    -- move the tipper in the given direction\n" +
                 "q(uit)              -- quit the game\n" +
-                "r(eset)             -- reset the current game");
+                "r(eset)             -- reset the current game\n");
 
         while(gameOn) {
-            msg = "";
             String command = in.nextLine().strip();
             String prefix = command.substring(0, 1);
             switch(prefix) {
@@ -83,28 +82,26 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
                 case "Q":
                 {
                     gameOn = false;
-                    return;
+                    break;
                 }
                 case "h":
                 case "H":
                 {
                     model.getHint();
                     displayBoard();
-                    return;
+                    break;
                 }
                 case "l":
                 case "L":
                 {
                     String filename = command.substring(1).strip();
                     loadFromFile(filename);
-                    displayBoard();
-                    return;
+                    break;
                 }
                 case "m":
                 case "M":
                 {
                     String direction = command.substring(1).strip();
-                    System.out.println("DIRECTION: " + direction);
                     switch(direction) {
                         case "N": {
                             model.moveNorth();
@@ -128,14 +125,13 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
                         }
                     }
                     displayBoard();
-                    return;
+                    break;
                 }
                 case "r":
                 case "R":
                 {
                     model.reset();
-                    displayBoard();
-                    return;
+                    break;
                 }
                 default: {
                     displayBoard();
@@ -144,23 +140,29 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
                             "m(ove) {N|S|E|W}    -- move the tipper in the given direction\n" +
                             "q(uit)              -- quit the game\n" +
                             "r(eset)             -- reset the current game");
-                    return;
+                    break;
                 }
             }
+
         }
+
     }
     
 
     @Override
     public void update(TipOverModel model, String msg) {
-        if (msg.equals(TipOverModel.LOADED)){ // game is loaded successfully
-            System.out.println("Game Loaded");
+        if (msg.equals(TipOverModel.LOADED)){
+            System.out.println("Loaded: data/tipover/\"" + filename);
             displayBoard();
             return;
-        }else if (msg.equals(TipOverModel.LOAD_FAILED)){ //Game failed to load
+        }else if (msg.equals(TipOverModel.LOAD_FAILED)){
             System.out.println("Error Loading Game");
             return;
-        } else if (msg.startsWith(TipOverModel.HINT_PREFIX)) { //Model is reporting a  hint
+        }else if(model.gameOver()) {
+
+        }
+
+        else if (msg.startsWith(TipOverModel.HINT_PREFIX)) {
             System.out.println(msg);
             //don't display board
             return;

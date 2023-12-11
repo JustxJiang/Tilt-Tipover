@@ -2,16 +2,12 @@ package puzzles.tipover.model;
 
 import puzzles.common.Observer;
 import puzzles.common.solver.Configuration;
-import puzzles.tilt.model.TiltConfig;
-import puzzles.tipover.solver.TipOver;
+import puzzles.common.solver.Solver;
 
 import java.awt.*;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class TipOverModel {
     /** the collection of observers of this model */
@@ -21,8 +17,7 @@ public class TipOverModel {
     private String currentFile;
     public static String LOADED = "loaded";
     public static String LOAD_FAILED = "loadFailed";
-
-    public static String HINT_PREFIX = "hint";
+    public static String HINT_PREFIX = "> Next Step!";
 
     public TipOverModel(String filename) {
         currentFile = filename;
@@ -49,20 +44,18 @@ public class TipOverModel {
         return currentConfig.getEnd();
     }
 
-    public boolean loadBoardFromFile(String filename) {
+    public void loadBoardFromFile(String filename) {
         try{
             currentConfig = new TipOverConfig(filename);
             alertObservers(LOADED);
-            return true;
         }
         catch (IOException e) {
             alertObservers(LOAD_FAILED);
-            return false;
         }
     }
 
     public void moveNorth() {
-        TipOverConfig newConfig = new TipOverConfig(currentConfig, "UP");
+        TipOverConfig newConfig = new TipOverConfig(currentConfig, "up");
         if(newConfig.isValid()){
             alertObservers("Move North");
             currentConfig = newConfig;
@@ -72,7 +65,7 @@ public class TipOverModel {
         }
     }
     public void moveSouth() {
-        TipOverConfig newConfig = new TipOverConfig(currentConfig, "DOWN");
+        TipOverConfig newConfig = new TipOverConfig(currentConfig, "down");
         if(newConfig.isValid()){
             alertObservers("Move South");
             currentConfig = newConfig;
@@ -82,7 +75,7 @@ public class TipOverModel {
         }
     }
     public void moveEast() {
-        TipOverConfig newConfig = new TipOverConfig(currentConfig, "Right");
+        TipOverConfig newConfig = new TipOverConfig(currentConfig, "right");
         if(newConfig.isValid()){
             alertObservers("Move East");
             currentConfig = newConfig;
@@ -92,7 +85,7 @@ public class TipOverModel {
         }
     }
     public void moveWest() {
-        TipOverConfig newConfig = new TipOverConfig(currentConfig, "Left");
+        TipOverConfig newConfig = new TipOverConfig(currentConfig, "left");
         if(newConfig.isValid()){
             alertObservers("Move West");
             currentConfig = newConfig;
@@ -105,7 +98,22 @@ public class TipOverModel {
         return currentConfig.isSolution();
     }
     public void getHint() {
-
+        Collection<Configuration> hint = Solver.solve(currentConfig);
+        String direction = ((TipOverConfig) hint.toArray()[1]).getLastMove();
+        switch(direction){
+            case "up":
+                moveNorth();
+                break;
+            case "down":
+                moveSouth();
+                break;
+            case "left":
+                moveWest();
+                break;
+            case "right":
+                moveEast();
+        }
+        alertObservers(HINT_PREFIX);
     }
     public void reset() {
         loadBoardFromFile(currentFile);

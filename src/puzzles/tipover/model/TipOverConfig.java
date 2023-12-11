@@ -23,6 +23,7 @@ public class TipOverConfig implements Configuration {
     private Point start = new Point();
     private Point end = new Point();
     private Point tipper = new Point();
+    private String lastMove;
 
     private boolean isValid;
 
@@ -68,6 +69,7 @@ public class TipOverConfig implements Configuration {
         }
         switch (direction) {
             case "up":
+                lastMove = "up";
                 if (onTower) {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
@@ -112,6 +114,7 @@ public class TipOverConfig implements Configuration {
                 }
                 break;
             case "down":
+                lastMove = "down";
                 if (onTower) {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
@@ -157,6 +160,7 @@ public class TipOverConfig implements Configuration {
                 }
                 break;
             case "left":
+                lastMove = "left";
                 if (onTower) {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
@@ -201,6 +205,7 @@ public class TipOverConfig implements Configuration {
                 }
                 break;
             case "right":
+                lastMove = "right";
                 if (onTower) {
                     boolean valid = true;
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
@@ -308,6 +313,9 @@ public class TipOverConfig implements Configuration {
     }
     public Point getEnd() {
         return end;
+    }
+    public String getLastMove(){
+        return lastMove;
     }
 
     @Override

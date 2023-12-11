@@ -12,7 +12,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import puzzles.common.Observer;
-import puzzles.tilt.model.TiltModel;
 import puzzles.tipover.model.TipOverModel;
 
 import javafx.application.Application;
@@ -20,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 
+import java.awt.*;
 import java.io.File;
 
 public class TipOverGUI extends Application implements Observer<TipOverModel, String> {
@@ -36,41 +36,37 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
     public void start(Stage stage) throws Exception {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load a game board.");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")+"/data/tipover"));
+        fileChooser.getExtensionFilters().addAll( new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
-        //Code for game buttons
-        GridPane grid = new GridPane();
-        for(int row = 0; row < model.getRows(); row++)
-        {
-            for(int col = 0; col < model.getCols(); col++)
-            {
-                Label label = new Label(model.getVal(row, col) + "");
-                label.setFont(new Font(30));
-                grid.add(label, col, row);
-            }
-        }
-        grid.setPadding(new Insets(10));
+
+        BorderPane main = new BorderPane();
+        main.setTop(message);
+        main.setCenter(updateBoard());
 
         //Code for toolbar
         GridPane toolbar = new GridPane();
         Button loadGame = new Button("Load Game");
         //Code for loading a board from a file
         loadGame.setOnAction((ActionEvent event) -> {
+
             File selectedFile = fileChooser.showOpenDialog(stage);
-            fileChooser.getExtensionFilters().addAll( new FileChooser.ExtensionFilter("Text Files", "*.lob"));
             //Tests for exception in case user closes file window
             try {
-                //model.loadBoardFromFile();
-                updateBoard();
+                model.loadBoardFromFile("data/tipover/" + selectedFile.getName());
+                message.setText("Loaded file: " + selectedFile.getName());
+                main.setCenter(updateBoard());
             }
             catch (NullPointerException e)
             {
-                updateBoard();
+                main.setCenter(updateBoard());
             }
         });
         Button reset = new Button("Reset");
         reset.setOnAction((ActionEvent event) -> {
             model.reset();
-            updateBoard();
+            message.setText("");
+            main.setCenter(updateBoard());
         });
         Button hint = new Button("Hint");
         //Code for user hints
@@ -78,17 +74,29 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
             if(!model.gameOver()) {
                 model.getHint();
             }
+            main.setCenter(updateBoard());
         });
         GridPane buttons = new GridPane();
         Button up = new Button("^");
-        up.setOnAction(e -> model.moveNorth());
+        up.setOnAction((ActionEvent event) -> {
+            model.moveNorth();
+            main.setCenter(updateBoard());
+        });
         Button down = new Button("v");
-        down.setOnAction(e -> model.moveSouth());
-        Button left = new Button("<");
-        left.setOnAction(e -> model.moveWest());
+        down.setOnAction((ActionEvent event) -> {
+            model.moveSouth();
+            main.setCenter(updateBoard());
+        });
         Button right = new Button(">");
-        right.setOnAction(e -> model.moveEast());
-
+        right.setOnAction((ActionEvent event) -> {
+            model.moveEast();
+            main.setCenter(updateBoard());
+        });
+        Button left = new Button("<");
+        left.setOnAction((ActionEvent event) -> {
+            model.moveWest();
+            main.setCenter(updateBoard());
+        });
 
         buttons.add(up, 1, 0);
         buttons.add(down, 1, 2);
@@ -101,9 +109,7 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
         toolbar.add(hint, 0, 2);
         toolbar.setAlignment(Pos.CENTER);
         //Code for program BorderPane
-        BorderPane main = new BorderPane();
-        main.setTop(message);
-        main.setCenter(grid);
+
         GridPane sidebar = new GridPane();
         sidebar.add(buttons, 0, 0);
         sidebar.add(toolbar, 0, 1);
@@ -120,18 +126,48 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
         stage.show();
     }
 
-    private void updateBoard()
+    private GridPane updateBoard()
     {
-        for(int row = 0; row < model.getRows(); row++) {
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+
+        for(int row = 0; row < model.getRows(); row++)
+        {
             for(int col = 0; col < model.getCols(); col++)
             {
-
+                Label label = new Label(model.getVal(row, col) + "");
+                label.setFont(new Font(30));
+                grid.add(label, col, row);
+                if(model.getTipper().x == row && model.getTipper().y == col)
+                {
+                    label.setStyle("-fx-background-color: pink;");
+                }
+                else if(model.getEnd().x == row && model.getEnd().y == col)
+                {
+                    label.setStyle("-fx-background-color: red;");
+                }
             }
         }
+
+        return grid;
     }
 
     @Override
-    public void update(TipOverModel tipOverModel, String message) {
+    public void update(TipOverModel tipOverModel, String msg) {
+        if (model.gameOver()) {
+            message.setText("You Win");
+            updateBoard();
+
+        }else if (msg.equals(model.LOADED)){
+            updateBoard();
+
+        }else if(msg.equals(model.HINT_PREFIX)){
+            updateBoard();
+        }
+        else {
+            //message.setText(msg);
+        }
+
     }
 
     public static void main(String[] args) {
