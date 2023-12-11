@@ -1,7 +1,8 @@
 package puzzles.tilt.model;
 
-import puzzles.clock.ClockConfig;
+
 import puzzles.common.solver.Configuration;
+
 
 import java.awt.image.TileObserver;
 import java.security.spec.RSAOtherPrimeInfo;
@@ -14,7 +15,11 @@ import java.io.IOException;
 public class TiltConfig implements Configuration{
     private int dimensions;
     private char[][] grid;
-    private static int blueCounter = 0;
+    private boolean hasMoved;
+    public static int blueCounter = 0;
+
+    private enum directions{NONE, UP, DOWN, LEFT, RIGHT};
+    private directions lastMove;
 
     public TiltConfig(String filename) throws IOException{
         blueCounter = 0;
@@ -31,6 +36,7 @@ public class TiltConfig implements Configuration{
                     }
                 }
             }
+            lastMove = directions.NONE;
         }
     }
 
@@ -40,106 +46,130 @@ public class TiltConfig implements Configuration{
         for (int i =0; i < getDimensions(); i++) {
             System.arraycopy(other.grid[i], 0, this.grid[i], 0, grid.length);
         }
-        boolean hasMoved = true;
         switch(direction){
             case "up":
-                while(hasMoved){
-                    hasMoved = false;
-                    for (int i =0; i < getDimensions(); i++){
-                        for (int j = 0; j < getDimensions(); j++){
-                            if ((i-1 >= 0) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
-                                char temp = getVal(i,j);
-                                switch(getVal(i-1, j)){
-                                    case '.':
-                                        this.grid[i][j] = '.';
-                                        this.grid[i-1][j] = temp;
-                                        hasMoved = true;
-                                        break; //remember to break in cases cuz if not it will still loop through all the cases
-                                    case 'O':
-                                        this.grid[i][j] = '.';
-                                        hasMoved = true;
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-
+                tiltUp();
+                lastMove = directions.UP;
                 break;
 
             case "down":
-                while(hasMoved){
-                    hasMoved = false;
-
-                    for (int i =0; i < getDimensions(); i++){
-                        for (int j = 0; j < getDimensions(); j++){
-                            if ((i+1 < getDimensions()) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
-                                char temp = getVal(i,j);
-                                switch(getVal(i+1, j)){
-                                    case '.':
-                                        this.grid[i][j] = '.';
-                                        this.grid[i+1][j] = temp;
-                                        hasMoved = true;
-                                        break; //remember to break in cases cuz if not it will still loop through all the cases
-                                    case 'O':
-                                        this.grid[i][j] = '.';
-                                        hasMoved = true;
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-
+                tiltDown();
+                lastMove = directions.DOWN;
                 break;
 
             case "left":
-                while(hasMoved){
-                    hasMoved = false;
-                    for (int i =0; i < getDimensions(); i++){
-                        for (int j = 0; j < getDimensions(); j++){
-                            if ((j-1 >= 0) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
-                                char temp = getVal(i,j);
-                                switch(getVal(i, j-1)){
-                                    case '.':
-                                        this.grid[i][j] = '.';
-                                        this.grid[i][j-1] = temp;
-                                        hasMoved = true;
-                                        break; //remember to break in cases cuz if not it will still loop through all the cases
-                                    case 'O':
-                                        this.grid[i][j] = '.';
-                                        hasMoved = true;
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-
+                tiltLeft();
+                lastMove = directions.LEFT;
                 break;
 
             case "right":
-                while(hasMoved){
-                    hasMoved = false;
-                    for (int i =0; i < getDimensions(); i++){
-                        for (int j = 0; j < getDimensions(); j++){
-                            if ((j+1 < getDimensions()) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
-                                char temp = getVal(i,j);
-                                switch(getVal(i, j+1)){
-                                    case '.':
-                                        this.grid[i][j] = '.';
-                                        this.grid[i][j+1] = temp;
-                                        hasMoved = true;
-                                        break; //remember to break in cases cuz if not it will still loop through all the cases
-                                    case 'O':
-                                        this.grid[i][j] = '.';
-                                        hasMoved = true;
-                                        break;
-                                }
-                            }
+                tiltRight();
+                lastMove = directions.RIGHT;
+                break;
+            default:
+                lastMove = directions.NONE;
+        }
+    }
+
+    public String getLastMove(){
+        return lastMove.toString();
+    }
+    public void tiltUp(){
+        hasMoved = true;
+        while(hasMoved){
+            hasMoved = false;
+            for (int i =0; i < getDimensions(); i++){
+                for (int j = 0; j < getDimensions(); j++){
+                    if ((i-1 >= 0) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                        char temp = getVal(i,j);
+                        switch(getVal(i-1, j)){
+                            case '.':
+                                this.grid[i][j] = '.';
+                                this.grid[i-1][j] = temp;
+                                hasMoved = true;
+                                break; //remember to break in cases cuz if not it will still loop through all the cases
+                            case 'O':
+                                this.grid[i][j] = '.';
+                                hasMoved = true;
+                                break;
                         }
                     }
                 }
+            }
+        }
+    }
+    public void tiltDown(){
+        hasMoved = true;
+        while(hasMoved){
+            hasMoved = false;
+
+            for (int i =0; i < getDimensions(); i++){
+                for (int j = 0; j < getDimensions(); j++){
+                    if ((i+1 < getDimensions()) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                        char temp = getVal(i,j);
+                        switch(getVal(i+1, j)){
+                            case '.':
+                                this.grid[i][j] = '.';
+                                this.grid[i+1][j] = temp;
+                                hasMoved = true;
+                                break; //remember to break in cases cuz if not it will still loop through all the cases
+                            case 'O':
+                                this.grid[i][j] = '.';
+                                hasMoved = true;
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void tiltRight(){
+        hasMoved = true;
+        while(hasMoved){
+            hasMoved = false;
+            for (int i =0; i < getDimensions(); i++){
+                for (int j = 0; j < getDimensions(); j++){
+                    if ((j+1 < getDimensions()) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                        char temp = getVal(i,j);
+                        switch(getVal(i, j+1)){
+                            case '.':
+                                this.grid[i][j] = '.';
+                                this.grid[i][j+1] = temp;
+                                hasMoved = true;
+                                break; //remember to break in cases cuz if not it will still loop through all the cases
+                            case 'O':
+                                this.grid[i][j] = '.';
+                                hasMoved = true;
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void tiltLeft() {
+        hasMoved = true;
+        while(hasMoved){
+            hasMoved = false;
+            for (int i =0; i < getDimensions(); i++){
+                for (int j = 0; j < getDimensions(); j++){
+                    if ((j-1 >= 0) && ((getVal(i, j) == 'G') || (getVal(i,j) == 'B'))){
+                        char temp = getVal(i,j);
+                        switch(getVal(i, j-1)){
+                            case '.':
+                                this.grid[i][j] = '.';
+                                this.grid[i][j-1] = temp;
+                                hasMoved = true;
+                                break; //remember to break in cases cuz if not it will still loop through all the cases
+                            case 'O':
+                                this.grid[i][j] = '.';
+                                hasMoved = true;
+                                break;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -201,7 +231,9 @@ public class TiltConfig implements Configuration{
 
     }
 
-
+    public static int getBlueCounter() {
+        return blueCounter;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,6 +1,7 @@
 package puzzles.tipover.ptui;
 
 import puzzles.common.Observer;
+import puzzles.tilt.model.TiltModel;
 import puzzles.tipover.model.TipOverModel;
 import puzzles.tipover.model.TipOverModel;
 
@@ -22,6 +23,7 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
 
     @Override
     public void update(TipOverModel model, String message) {
+
     }
 
     public static void main(String[] args) {
