@@ -61,6 +61,7 @@ public class TiltModel {
             case "RIGHT":
                 tiltRight();
         }
+        alertObservers(HINT_PREFIX);
     }
 
     public void tiltUp(){
