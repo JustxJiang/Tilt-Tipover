@@ -5,6 +5,7 @@ import puzzles.common.solver.Configuration;
 import puzzles.tilt.model.TiltConfig;
 import puzzles.tipover.solver.TipOver;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
@@ -20,6 +21,8 @@ public class TipOverModel {
     private String currentFile;
     public static String LOADED = "loaded";
     public static String LOAD_FAILED = "loadFailed";
+
+    public static String HINT_PREFIX = "hint";
 
     public TipOverModel(String filename) {
         currentFile = filename;
@@ -38,6 +41,14 @@ public class TipOverModel {
     public int getCols() {
         return currentConfig.getCols();
     }
+
+    public Point getTipper(){
+        return currentConfig.getTipper();
+    }
+    public Point getEnd(){
+        return currentConfig.getEnd();
+    }
+
     public boolean loadBoardFromFile(String filename) {
         try{
             currentConfig = new TipOverConfig(filename);

@@ -303,6 +303,13 @@ public class TipOverConfig implements Configuration {
         return isValid;
     }
 
+    public Point getTipper() {
+        return tipper;
+    }
+    public Point getEnd() {
+        return end;
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();

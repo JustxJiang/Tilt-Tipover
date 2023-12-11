@@ -5,7 +5,9 @@ import puzzles.tilt.model.TiltModel;
 import puzzles.tilt.ptui.TiltPTUI;
 import puzzles.tipover.model.TipOverModel;
 import puzzles.tipover.model.TipOverModel;
+import puzzles.tipover.solver.TipOver;
 
+import java.sql.SQLOutput;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -30,33 +32,37 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
 
 
     public void displayBoard(){
+        StringBuilder result = new StringBuilder();
+        result.append("     ");
+        for(int col = 0; col < model.getCols(); col++) {
+            result.append(" " + col + " ");
+        }
+        result.append("\n    ");
+        for(int col = 0; col < model.getCols(); col++) {
+            result.append("---");
+        }
+        result.append("\n");
+        for(int row = 0; row < model.getRows(); row++) {
+            result.append(" " + row + " | ");
+            for(int col = 0; col < model.getCols(); col++) {
+                char temp = model.getVal(row, col);
+                if(temp == '0') {
+                    result.append(" _ ");
+                } else {
+                    if (row == model.getTipper().x && col == model.getTipper().y) {
+                        result.append("*");
+                    } else if (row == model.getEnd().x && col == model.getEnd().y) {
+                        result.append("!");
+                    } else {
+                        result.append(" ");
+                    }
+                    result.append(temp + " ");
+                }
+            }
+            result.append("\n");
+        }
         System.out.println(model.toString());
-
-//        //prints the column number
-//        System.out.print("  ");
-//        for(int c =0; c<model.getDimension(); c++){
-//            System.out.print(c+" ");
-//        }
-//        //System.out.print("\033[0;0m"); //turn off underline
-//        int currentRow = -1;
-//
-//        //prints the tiles
-//        for(Tile t : model){
-//            if (currentRow!=t.getY()){ //newline for new rows.
-//                currentRow=t.getY();
-//                System.out.printf("%n%d ",currentRow);
-//
-//            }
-//            char symbol = OFFSYMBOL;
-//            if (t.isOn()) {
-//                symbol= ONSYMBOL;
-//            }
-//            System.out.print(symbol+" ");
-//
-//        }
-//
-//        System.out.printf("\nTotal Moves: %d\n",model.getMoves());
-//        //  System.out.println();
+        System.out.println(result);
     }
 
     private void gameLoop(){
@@ -84,42 +90,52 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
                 {
                     model.getHint();
                     displayBoard();
+                    return;
                 }
                 case "l":
                 case "L":
                 {
-                    String filename = command.substring(1);
+                    String filename = command.substring(1).strip();
                     loadFromFile(filename);
                     displayBoard();
+                    return;
                 }
                 case "m":
                 case "M":
                 {
-                    String direction = command.substring(1);
+                    String direction = command.substring(1).strip();
+                    System.out.println("DIRECTION: " + direction);
                     switch(direction) {
                         case "N": {
                             model.moveNorth();
+                            break;
                         }
                         case "S": {
                             model.moveSouth();
+                            break;
                         }
                         case "E": {
                             model.moveEast();
+                            break;
                         }
                         case "W": {
                             model.moveWest();
+                            break;
                         }
                         default: {
                             System.out.println("Please specify a direction to move {N|S|E|W}");
+                            break;
                         }
                     }
                     displayBoard();
+                    return;
                 }
                 case "r":
                 case "R":
                 {
                     model.reset();
                     displayBoard();
+                    return;
                 }
                 default: {
                     displayBoard();
@@ -128,21 +144,27 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
                             "m(ove) {N|S|E|W}    -- move the tipper in the given direction\n" +
                             "q(uit)              -- quit the game\n" +
                             "r(eset)             -- reset the current game");
+                    return;
                 }
             }
-
-
-            if (!msg.isEmpty())
-
-                System.out.println("Command: "+command+"\n\033[0;1m***"+msg+"***\033[0;0m");
-
         }
     }
     
 
     @Override
-    public void update(TipOverModel model, String message) {
-        displayBoard();
+    public void update(TipOverModel model, String msg) {
+        if (msg.equals(TipOverModel.LOADED)){ // game is loaded successfully
+            System.out.println("Game Loaded");
+            displayBoard();
+            return;
+        }else if (msg.equals(TipOverModel.LOAD_FAILED)){ //Game failed to load
+            System.out.println("Error Loading Game");
+            return;
+        } else if (msg.startsWith(TipOverModel.HINT_PREFIX)) { //Model is reporting a  hint
+            System.out.println(msg);
+            //don't display board
+            return;
+        }
     }
     public void run(){
         while(true){
