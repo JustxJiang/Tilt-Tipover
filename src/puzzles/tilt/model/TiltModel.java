@@ -159,6 +159,7 @@ public class TiltModel {
 
     public void reset(){
         loadBoardFromFile(file);
+        alertObservers("reset");
     }
 
     public boolean gameOver(){
