@@ -158,7 +158,7 @@ public class TiltPTUI implements Observer<TiltModel, String> {
             gameOn = false;
         }
     }
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java TiltPTUI filename");
         }

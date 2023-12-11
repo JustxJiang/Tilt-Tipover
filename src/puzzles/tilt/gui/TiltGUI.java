@@ -41,6 +41,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
     public void init() {
         String filename = getParameters().getRaw().get(0);
         model = new TiltModel(filename);
+        model.loadBoardFromFile(filename);
         model.addObserver(this);
     }
 
@@ -194,7 +195,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         // if the message is file loaded, recreate the board with the dimension and
         // set every button in the grid with the info from the model
         if (model.gameOver()) {
-            message.setText("You Win");
+            message.setText("You Won. Load New Game, Reset Board, or play around.");
             board();
 
         }else if (msg.equals(model.LOADED)){
