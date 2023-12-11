@@ -27,7 +27,7 @@ public class TipOverConfig implements Configuration {
     private boolean isValid;
 
 
-    public TipOverConfig(String filename) {
+    public TipOverConfig(String filename) throws IOException {
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             String[] fields = in.readLine().split("\\s+");
             puzzleRows = Integer.parseInt(fields[0]); //Number of rows in the puzzle
@@ -45,8 +45,6 @@ public class TipOverConfig implements Configuration {
                 }
                 fields = in.readLine().split("\\s+");
             }
-        } catch (IOException e) {
-            System.out.println("Error: File not found!");
         }
     }
 
@@ -298,6 +296,11 @@ public class TipOverConfig implements Configuration {
 
     public char getVal(int row, int col) {
         return this.puzzleGrid[row][col];
+    }
+
+    public boolean isValid()
+    {
+        return isValid;
     }
 
     @Override
