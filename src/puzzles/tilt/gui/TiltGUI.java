@@ -51,6 +51,8 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
     public void start(Stage stage) throws Exception {
 
         BorderPane borderPane = new BorderPane();
+        borderPane.setPadding(new Insets(5));
+        borderPane.setMinSize(model.getDimensions()+100,model.getDimensions()+100);
         message.setText("Load a file");
         borderPane.setTop(message);
         message.setAlignment(Pos.TOP_CENTER);
@@ -80,44 +82,36 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
         BorderPane middle = new BorderPane();
         Button up = new Button("^");
-        up.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        up.setPadding(new Insets(10,0,10,0));
         up.setOnAction(e -> model.tiltUp());
         Button down = new Button("v");
-        down.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        down.setPadding(new Insets(10,0,10,0));
         down.setOnAction(e -> model.tiltDown());
         Button left = new Button("<");
-        left.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        left.setPadding(new Insets(0,10,0,10));
         left.setOnAction(e -> model.tiltLeft());
         Button right = new Button(">");
-        right.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        right.setPadding(new Insets(10,10,10,10));
         right.setOnAction(e -> model.tiltRight());
         middle.setTop(up);
         middle.setBottom(down);
         middle.setLeft(left);
         middle.setRight(right);
-        middle.setPadding(new Insets(20,20,20,20));
         borderPane.setCenter(middle);
 
 
         GridPane center = new GridPane();
-        adjust(green);
-        adjust(blue);
-        adjust(hole);
-        adjust(block);
-
-        center.setMinSize(250, 250);
-        center.setPadding(new Insets(10,10,10,10));
         center.setAlignment(Pos.CENTER);
-        center.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        green.fitHeightProperty().bind(center.heightProperty().subtract(100).divide(model.getDimensions()));
+        green.fitWidthProperty().bind(center.widthProperty().subtract(100).divide(model.getDimensions()));
+        blue.fitHeightProperty().bind(center.heightProperty().subtract(100).divide(model.getDimensions()));
+        blue.fitWidthProperty().bind(center.widthProperty().subtract(100).divide(model.getDimensions()));
+        hole.fitHeightProperty().bind(center.heightProperty().subtract(100).divide(model.getDimensions()));
+        hole.fitWidthProperty().bind(center.widthProperty().subtract(100).divide(model.getDimensions()));
+        block.fitHeightProperty().bind(center.heightProperty().subtract(100).divide(model.getDimensions()));
+        block.fitWidthProperty().bind(center.widthProperty().subtract(100).divide(model.getDimensions()));
+
+
         for (int y = 0; y < model.getDimensions(); y++){
             for (int x = 0; x < model.getDimensions(); x++){
                 buttons[x][y] = new Button();
-                buttons[x][y].setStyle("-fx-focus-traversable: false;-fx-background-color: #ffffff");
-                buttons[x][y].setMinSize(50,50);
                 if (model.getCell(y, x) == 'B') {
                     buttons[x][y].setGraphic(blue);
                 }
@@ -131,20 +125,20 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
                     buttons[x][y].setGraphic(hole);
                 }
                 center.add(buttons[x][y], x, y);
+                buttons[x][y].setStyle("-fx-focus-traversable: false;-fx-background-color: #ffffff");
+
             }
         }
         center.setGridLinesVisible(true);
+        center.setMinWidth(model.getDimensions());
         middle.setCenter(center);
         Scene scene = new Scene(borderPane,500,500);
         stage.setScene(scene);
         stage.show();
     }
 
+
     public void updateBoard(){
-        adjust(green);
-        adjust(blue);
-        adjust(block);
-        adjust(hole);
 
         for (int y = 0; y < model.getDimensions(); y++){
             for (int x = 0; x < model.getDimensions(); x++){
@@ -166,11 +160,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             }
         }
     }
-    public ImageView adjust(ImageView image){
-        image.setFitHeight(50);
-        image.setFitWidth(50);
-        return image;
-    }
+
     @Override
     public void update(TiltModel tiltModel, String msg) {
         updateBoard();
