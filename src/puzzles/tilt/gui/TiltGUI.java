@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import puzzles.common.Observer;
 import puzzles.tilt.model.TiltModel;
@@ -21,26 +22,29 @@ import java.io.File;
 public class TiltGUI extends Application implements Observer<TiltModel, String> {
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
-    private TiltModel model;
-    private Button[][] buttons;
-    private Label message = new Label();
-    private Image greenDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green.png"));
-    private ImageView green = new ImageView(greenDisk);
+    private TiltModel model; //initialized model here
+    private String file; //used when resetting and loading files
+    private Button[][] buttons; //2d array of buttons
+    private Label message = new Label(); //label that will serve as message each time an action happens
 
-    private Image blueDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"blue.png"));
-    private ImageView blue = new ImageView(blueDisk);
+    private Image greenDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green.png")); //Image of green token
+    private ImageView green = new ImageView(greenDisk); //ImageView of green token
 
-    private Image holeDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"hole.png"));
-    private ImageView hole = new ImageView(holeDisk);
+    private Image blueDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"blue.png")); //Image of blue token
+    private ImageView blue = new ImageView(blueDisk); //ImageView of blue token
 
-    private Image blockDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"block.png"));
-    private ImageView block = new ImageView(blockDisk);
+    private Image holeDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"hole.png")); //Image of hole
+    private ImageView hole = new ImageView(holeDisk); //ImageView of hole
 
+    private Image blockDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"block.png")); //Image of blocker
+    private ImageView block = new ImageView(blockDisk); //ImageView of blocker
 
 
     public void init() {
         String filename = getParameters().getRaw().get(0);
+        file = filename;
         model = new TiltModel(filename);
+        model.loadBoardFromFile(filename);
         model.addObserver(this);
     }
 
@@ -56,9 +60,12 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
         //top
         FlowPane top = new FlowPane();
-        message.setText("Load a file");
-        borderPane.setTop(message);
-        top.setAlignment(Pos.TOP_CENTER);
+        message.setFont(Font.font("Elephant"));
+        message.setMinSize(50,50);
+        message.setText("Loaded: " + file);
+        top.getChildren().add(message);
+        borderPane.setTop(top);
+        top.setAlignment(Pos.CENTER);
 
 
         //right
@@ -73,9 +80,9 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             //open up a window for the user to interact with.
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile.toString() != null) {
-                model.loadBoardFromFile(selectedFile.toString());
+                file = selectedFile.toString();
+                model.loadBoardFromFile(file);
                 middle.setCenter(board());
-                message.setText(selectedFile.toString());
             }
         });
         Button reset = new Button("Reset");
@@ -83,10 +90,21 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             model.reset();
             middle.setCenter(board());
         });
+
         Button hint = new Button("Hint");
         hint.setOnAction(e -> {
-            model.getHint();
-            middle.setCenter(board());
+            try{
+                model.getHint();
+                middle.setCenter(board());
+            }catch(Exception x){
+                if(model.gameOver()){
+                    message.setText("No Hint Available. You Already Won.");
+                }
+                else{
+                    message.setText("No Hint because there is no solution. Don't Believe Me? Try It Yourself.");
+                }
+            }
+
         });
         rightPanel.getChildren().addAll(load, reset, hint);
         borderPane.setRight(rightPanel);
@@ -122,7 +140,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             model.tiltRight();
             middle.setCenter(board());
         });
-
+        middle.setMaxSize((50*model.getDimensions())+50, (50*model.getDimensions())+50);
         middle.setTop(up);
         middle.setBottom(down);
         middle.setLeft(left);
@@ -130,20 +148,15 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         borderPane.setCenter(middle);
 
 
-//        GridPane center = new GridPane();
-//        center.setAlignment(Pos.CENTER);
-
-
-
-
-//        center.setGridLinesVisible(true);
-//        center.setMinSize(400,400);
         middle.setCenter(board());
-        Scene scene = new Scene(borderPane,800,800);
+        Scene scene = new Scene(borderPane,300*model.getDimensions(),300*model.getDimensions());
         stage.setScene(scene);
         stage.show();
     }
 
+    /**
+     * the main board - the center
+     */
     public GridPane board(){
         GridPane center = new GridPane();
         center.setAlignment(Pos.CENTER);
@@ -192,7 +205,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             }
         }
         center.setGridLinesVisible(true);
-        center.setMinSize(400,400);
+        center.setMinSize(50*model.getDimensions(),50*model.getDimensions());
         return center;
     }
 
@@ -202,12 +215,14 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         // if the message is file loaded, recreate the board with the dimension and
         // set every button in the grid with the info from the model
         if (model.gameOver()) {
-            message.setText("You Win");
+            message.setText("You Won. Load New Game, Reset Board, or Play Around.");
             board();
 
         }else if (msg.equals(model.LOADED)){
+            message.setText(file);
             board();
         }else if(msg.equals(model.HINT_PREFIX)){
+            message.setText("Next Step!");
             board();
         }
         else {

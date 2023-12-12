@@ -23,6 +23,10 @@ public class TiltModel {
     public static String LOAD_FAILED = "Load Failed";
     public static String LOADED = "loaded";
 
+    /**
+     * Constructor for Tilt Game Model
+     * @param filename
+     */
     public TiltModel(String filename) {
         try {
             currentConfig = new TiltConfig(filename);
@@ -31,7 +35,11 @@ public class TiltModel {
         }
     }
 
-
+    /**
+     * Loads Board from file - Serves to help "Load Game"
+     * @param filename
+     * @return true if board is succesfully loaded from filename
+     */
     public boolean loadBoardFromFile(String filename) {
         file = filename;
         try{
@@ -45,6 +53,9 @@ public class TiltModel {
         }
     }
 
+    /**
+     * returns the next correct step
+     */
     public void getHint(){
         Collection<Configuration> hint = Solver.solve(currentConfig);
         String direction = ((TiltConfig) hint.toArray()[1]).getLastMove();
@@ -64,6 +75,19 @@ public class TiltModel {
         alertObservers(HINT_PREFIX);
     }
 
+    /**
+     *
+     * @param row
+     * @param col
+     * @return value at position(row, col)
+     */
+    public char getCell(int row, int col) {
+        return currentConfig.getVal(row, col);
+    }
+
+    /**
+     * Tilts the Board Up using TiltConfig
+     */
     public void tiltUp(){
         temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltUp();
@@ -87,10 +111,9 @@ public class TiltModel {
         }
     }
 
-    public char getCell(int row, int col) {
-        return currentConfig.getVal(row, col);
-    }
-
+    /**
+     * Tilts the Board Down using TiltConfig
+     */
     public void tiltDown(){
         temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltDown();
@@ -113,6 +136,10 @@ public class TiltModel {
         }
 
     }
+
+    /**
+     * Tilts Board Left using TiltConfig
+     */
     public void tiltLeft(){
         temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltLeft();
@@ -135,6 +162,10 @@ public class TiltModel {
         }
 
     }
+
+    /**
+     * Tilts Board Right using TiltConfig
+     */
     public void tiltRight(){
         temp = new TiltConfig(currentConfig, "none");
         currentConfig.tiltRight();
@@ -157,16 +188,29 @@ public class TiltModel {
         }
     }
 
+    /**
+     * Resets the Board
+     */
     public void reset(){
         loadBoardFromFile(file);
+        alertObservers("Board Reset.");
     }
 
+    /**
+     *
+     * @return true if the CurrentConfig is the Solution and indicates that the game is over
+     */
     public boolean gameOver(){
         if(currentConfig.isSolution()){
             return true;
         }
         return false;
     }
+
+    /**
+     *
+     * @return the dimensions of the board
+     */
     public int getDimensions(){
         return currentConfig.getDimensions();
     }

@@ -19,7 +19,10 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
     private boolean gameOn;
     private String filename;
 
-
+    /**
+     * Constructor for PTUI
+     * @param filename
+     */
     public TipOverPTUI(String filename) {
         try {
             model = new TipOverModel(filename);
@@ -33,13 +36,19 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
         }
     }
 
+    /**
+     * loads board from file
+     * @param filename
+     */
     public void loadFromFile(String filename) {
         this.filename = filename;
         model.loadBoardFromFile(filename);
     }
 
 
-
+    /**
+     * displays the board
+     */
     public void displayBoard(){
         StringBuilder result = new StringBuilder();
         result.append("     ");
@@ -72,6 +81,7 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
         }
         System.out.println(result);
     }
+
 
     private void gameLoop(){
         System.out.println("Loaded: " + filename + "\n");

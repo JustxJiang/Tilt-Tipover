@@ -17,120 +17,137 @@ public class TiltPTUI implements Observer<TiltModel, String> {
     private TiltModel model;
     private Scanner in;
     private boolean gameOn;
+    private String command;
+    private String file;
 
+    /**
+     * PTUI for the Tilt Game
+     * @param filename
+     */
     public TiltPTUI(String filename){
         model = new TiltModel(filename);
+        model.loadBoardFromFile(filename);
+        file = filename;
         model.addObserver(this);
         in = new Scanner(System.in);
-        gameOn = false;
+        gameOn = true;
     }
 
-    public boolean loadFromFile(){
-        boolean ready = false;
-
-        while(!ready){
-            System.out.println("Enter a valid file name or type Q to go back.");
-            String command =  in.next();
-            if (command.equals("q") || command.equals("Q")) {
-                System.out.println("going back...");
-                return false;
-            }
-            else {
-                ready = model.loadBoardFromFile(command);
-            }
-
-        }
-        return true;
-    }
-
-
-    public boolean gameStart(){
-        boolean ready = false;
-        while(!ready){
-            System.out.println("(L)oad Game. (Q)uit");
-            String command =  in.next(); // Using next allows you to string together load commands like l boards/1.lob.
-            switch (command){
-                case "L":
-                case "l":
-                    ready = loadFromFile();
-                    break;
-                case "Q":
-                case "q":
-                    System.out.println("Exiting");
-                    in = new Scanner(System.in);//get rid of any remaining commands from the start menu
-                    ready = true;
-                    return false;
-
-                default:
-                    System.out.println("Enter L or Q.");
-            }
-            gameOn = true;
-        }
-        in = new Scanner(System.in);//get rid of any remaining commands from the start menu
-        return true;
-    }
-
-    public void run() throws IOException {
-        while (true){
-            if(!(gameStart())){
-                break;
-            }
+    /**
+     * runs the game while gameOn is true
+     */
+    public void run(){
+        while (gameOn){
             gameLoop();
         }
     }
 
-    public void gameLoop() throws IOException {
-        String msg;
-
+    /**
+     * Main Code for the Game
+     */
+    public void gameLoop() {
+        System.out.println("Loaded: " + file);
+        displayBoard();
+        System.out.println();
         while(gameOn) {
-            msg = "";
-            System.out.println("Enter up, down, left, right to tilt board, (R)eset, (H)int, or (Q)uit to main menu");
-            String command = in.nextLine().strip();
-            if (command.equals("q") || command.equals("Q")) {
-                System.out.println("Quitting to main menu.");
-                gameOn = false;
+            System.out.println("    h(int)              -- hint next move\n" +
+                    "    l(oad) filename     -- load new puzzle file\n" +
+                    "    t(ilt) {N|S|E|W}    -- tilt the board in the given direction\n" +
+                    "    q(uit)              -- quit the game\n" +
+                    "    r(eset)             -- reset the current game");
 
-                return;
-
-            }else if (command.equals("h") || command.equals("H")) {
-                model.getHint();
-                displayBoard();
-
-            }else if(command.equals("r") || command.equals("R")){
-                model.reset();
-            }else {
-                try {
-                    Scanner s = new Scanner(command);
-                    String direction = s.next();
-                    switch(direction){
-                        case "up":
-                            model.tiltUp();
-                            break;
-                        case "down":
-                            model.tiltDown();
-                            break;
-                        case "left":
-                            model.tiltLeft();
-                            break;
-                        case "right":
-                            model.tiltRight();
-                    }
-                    displayBoard();
-
-                } catch (InputMismatchException e) {
-
-                    msg = "Direction  must be string and lowercase";
-                } catch (NoSuchElementException e) {
-
-                    msg = "Must enter direction on one line";
+            try{
+                command = in.nextLine().strip();
+                String prefix = command.substring(0,1);
+                switch(prefix){
+                    case "h":
+                    case "H":
+                        if(model.gameOver()){
+                            System.out.println("No Hint Available. You Have Already Won.");
+                            displayBoard();
+                        }
+                        else{
+                            model.getHint();
+                            displayBoard();
+                            System.out.println();
+                        }
+                        break;
+                    case "L":
+                    case "l":
+                        try{
+                            model.loadBoardFromFile(command.substring(1).strip());
+                        }catch (Exception e){
+                            System.out.println("Invalid Filename or No File inputted.\n"+
+                                    "   h(int)              -- hint next move\n" +
+                                    "   l(oad) filename     -- load new puzzle file\n" +
+                                    "   t(ilt) {N|S|E|W}    -- tilt the board in the given direction\n" +
+                                    "   q(uit)              -- quit the game\n" +
+                                    "   r(eset)             -- reset the current game");
+                        }
+                        break;
+                    case "t":
+                    case "T":
+                        String direction = command.substring(1).strip();
+                        switch(direction){
+                            case "N":
+                            case "n":
+                                model.tiltUp();
+                                break;
+                            case "S":
+                            case "s":
+                                model.tiltDown();
+                                break;
+                            case "W":
+                            case "w":
+                                model.tiltLeft();
+                                break;
+                            case "E":
+                            case "e":
+                                model.tiltRight();
+                                break;
+                            default:
+                                System.out.println("Direction must be: t or T, and then N S E or W <ON ONE LINE> \n"+
+                                        "   h(int)              -- hint next move\n" +
+                                        "   l(oad) filename     -- load new puzzle file\n" +
+                                        "   t(ilt) {N|S|E|W}    -- tilt the board in the given direction\n" +
+                                        "   q(uit)              -- quit the game\n" +
+                                        "   r(eset)             -- reset the current game");
+                        }
+                        displayBoard();
+                        System.out.println();
+                        break;
+                    case "q":
+                    case "Q":
+                        System.out.println("Quitting to main menu.");
+                        gameOn = false;
+                        break;
+                    case "r":
+                    case "R":
+                        model.reset();
+                        displayBoard();
+                        System.out.println();
+                        break;
+                    default:
+                        System.out.println("Enter one of the commands below:\n" +
+                                "   h(int)              -- hint next move\n" +
+                                "   l(oad) filename     -- load new puzzle file\n" +
+                                "   t(ilt) {N|S|E|W}    -- tilt the board in the given direction\n" +
+                                "   q(uit)              -- quit the game\n" +
+                                "   r(eset)             -- reset the current game");
                 }
+            }catch(IndexOutOfBoundsException e){
+                System.out.println("No Input Detected!");
+                displayBoard();
             }
 
-            if (!msg.isEmpty())
-                System.out.println("Command: "+command+"\n\033[0;1m***"+msg+"***\033[0;0m");
         }
+
+
     }
 
+    /**
+     * Displays the Board
+     */
     public void displayBoard(){
 
         //prints the tiles
@@ -156,19 +173,16 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         }
 
         if (model.gameOver()) { //checks if game is over.
-            displayBoard();
-
-            System.out.println("You win. Good for you.");
-            gameOn = false;
+            System.out.println("You have Won.");
         }
     }
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java TiltPTUI filename");
         }
         else{
             TiltPTUI ui = new TiltPTUI(args[0]);
-            ui.run();
+            ui.run(); //runs the game
         }
     }
 }
