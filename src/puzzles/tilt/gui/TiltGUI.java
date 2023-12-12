@@ -22,6 +22,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
     private TiltModel model;
+    private String file;
     private Button[][] buttons;
     private Label message = new Label();
     private Image greenDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green.png"));
@@ -40,6 +41,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
     public void init() {
         String filename = getParameters().getRaw().get(0);
+        file = filename;
         model = new TiltModel(filename);
         model.loadBoardFromFile(filename);
         model.addObserver(this);
@@ -57,7 +59,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
         //top
         FlowPane top = new FlowPane();
-        message.setText("Load a file");
+        message.setText("Loaded: " + file);
         borderPane.setTop(message);
         top.setAlignment(Pos.TOP_CENTER);
 
@@ -74,9 +76,9 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             //open up a window for the user to interact with.
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile.toString() != null) {
-                model.loadBoardFromFile(selectedFile.toString());
+                file = selectedFile.toString();
+                model.loadBoardFromFile(file);
                 middle.setCenter(board());
-                message.setText(selectedFile.toString());
             }
         });
         Button reset = new Button("Reset");
@@ -137,6 +139,9 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         stage.show();
     }
 
+    /**
+     * the main board - the center
+     */
     public GridPane board(){
         GridPane center = new GridPane();
         center.setAlignment(Pos.CENTER);
@@ -199,8 +204,10 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             board();
 
         }else if (msg.equals(model.LOADED)){
+            message.setText(file);
             board();
         }else if(msg.equals(model.HINT_PREFIX)){
+            message.setText("Next Step!");
             board();
         }
         else {
