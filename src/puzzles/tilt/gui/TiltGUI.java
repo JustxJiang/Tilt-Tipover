@@ -144,7 +144,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
 
         middle.setCenter(board());
-        Scene scene = new Scene(borderPane,1000,1000);
+        Scene scene = new Scene(borderPane,300*model.getDimensions(),300*model.getDimensions());
         stage.setScene(scene);
         stage.show();
     }
