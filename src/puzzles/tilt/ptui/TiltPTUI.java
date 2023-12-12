@@ -62,9 +62,15 @@ public class TiltPTUI implements Observer<TiltModel, String> {
                 switch(prefix){
                     case "h":
                     case "H":
-                        model.getHint();
-                        displayBoard();
-                        System.out.println();
+                        if(model.gameOver()){
+                            System.out.println("No Hint Available. You Have Already Won.");
+                            displayBoard();
+                        }
+                        else{
+                            model.getHint();
+                            displayBoard();
+                            System.out.println();
+                        }
                         break;
                     case "L":
                     case "l":
@@ -167,8 +173,7 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         }
 
         if (model.gameOver()) { //checks if game is over.
-            System.out.println("You win. Good for you.");
-            gameOn = false;
+            System.out.println("You have Won.");
         }
     }
     public static void main(String[] args) {
