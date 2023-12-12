@@ -21,6 +21,11 @@ public class TiltConfig implements Configuration{
     private enum directions{NONE, UP, DOWN, LEFT, RIGHT};
     private directions lastMove;
 
+    /**
+     * Constructor of TiltConfig
+     * @param filename
+     * @throws IOException
+     */
     public TiltConfig(String filename) throws IOException{
         blueCounter = 0;
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
@@ -40,6 +45,11 @@ public class TiltConfig implements Configuration{
         }
     }
 
+    /**
+     * Second Constructor of TiltConfig
+     * @param other
+     * @param direction
+     */
     protected TiltConfig(TiltConfig other, String direction){
         this.dimensions = other.grid.length;
         this.grid = new char[getDimensions()][getDimensions()];
@@ -71,9 +81,17 @@ public class TiltConfig implements Configuration{
         }
     }
 
+    /**
+     *
+     * @return the last direction tilted / the last move
+     */
     public String getLastMove(){
         return lastMove.toString();
     }
+
+    /**
+     * Tilts Board Up
+     */
     public void tiltUp(){
         hasMoved = true;
         while(hasMoved){
@@ -98,6 +116,10 @@ public class TiltConfig implements Configuration{
             }
         }
     }
+
+    /**
+     * Tilts Board Down
+     */
     public void tiltDown(){
         hasMoved = true;
         while(hasMoved){
@@ -123,6 +145,10 @@ public class TiltConfig implements Configuration{
             }
         }
     }
+
+    /**
+     * Tilts Board Right
+     */
     public void tiltRight(){
         hasMoved = true;
         while(hasMoved){
@@ -148,6 +174,9 @@ public class TiltConfig implements Configuration{
         }
     }
 
+    /**
+     * Tilts Board Left
+     */
     public void tiltLeft() {
         hasMoved = true;
         while(hasMoved){
@@ -173,10 +202,18 @@ public class TiltConfig implements Configuration{
         }
     }
 
+    /**
+     *
+     * @return dimensions of board
+     */
     public int getDimensions(){
         return this.dimensions;
     }
 
+    /**
+     *
+     * @return true if all Green tokens have gone in the hole and game is over
+     */
     @Override
     public boolean isSolution() {
         for (int i =0; i < getDimensions(); i++){
@@ -199,7 +236,10 @@ public class TiltConfig implements Configuration{
     }
 
 
-
+    /**
+     *
+     * @return possible solutions / tilts the board in every direction
+     */
     @Override
     public Collection<Configuration> getNeighbors() {
         LinkedList<Configuration> neighbors = new LinkedList<>();
@@ -231,9 +271,15 @@ public class TiltConfig implements Configuration{
 
     }
 
+    /**
+     *
+     * @return number of blue tokens
+     */
+
     public static int getBlueCounter() {
         return blueCounter;
     }
+
 
     @Override
     public boolean equals(Object o) {

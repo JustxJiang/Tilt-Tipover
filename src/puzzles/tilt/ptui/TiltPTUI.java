@@ -19,6 +19,11 @@ public class TiltPTUI implements Observer<TiltModel, String> {
     private boolean gameOn;
     private String command;
     private String file;
+
+    /**
+     * PTUI for the Tilt Game
+     * @param filename
+     */
     public TiltPTUI(String filename){
         model = new TiltModel(filename);
         model.loadBoardFromFile(filename);
@@ -28,13 +33,18 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         gameOn = true;
     }
 
-
+    /**
+     * runs the game while gameOn is true
+     */
     public void run(){
         while (gameOn){
             gameLoop();
         }
     }
 
+    /**
+     * Main Code for the Game
+     */
     public void gameLoop() {
         System.out.println("Loaded: " + file);
         displayBoard();
@@ -129,6 +139,9 @@ public class TiltPTUI implements Observer<TiltModel, String> {
 
     }
 
+    /**
+     * Displays the Board
+     */
     public void displayBoard(){
 
         //prints the tiles
@@ -164,7 +177,7 @@ public class TiltPTUI implements Observer<TiltModel, String> {
         }
         else{
             TiltPTUI ui = new TiltPTUI(args[0]);
-            ui.run();
+            ui.run(); //runs the game
         }
     }
 }

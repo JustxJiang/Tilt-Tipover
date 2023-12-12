@@ -56,6 +56,10 @@ public class WaterConfig implements Configuration {
         return neighbors;
     }
 
+    /**
+     *
+     * @return true if WaterConfig is solved
+     */
     public boolean isSolution(){
         if (this.buckets.contains(desiredAmount)){
             return true;

@@ -21,22 +21,22 @@ import java.io.File;
 public class TiltGUI extends Application implements Observer<TiltModel, String> {
     /** The resources directory is located directly underneath the gui package */
     private final static String RESOURCES_DIR = "resources/";
-    private TiltModel model;
-    private String file;
-    private Button[][] buttons;
-    private Label message = new Label();
-    private Image greenDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green.png"));
-    private ImageView green = new ImageView(greenDisk);
+    private TiltModel model; //initialized model here
+    private String file; //used when resetting and loading files
+    private Button[][] buttons; //2d array of buttons
+    private Label message = new Label(); //label that will serve as message each time an action happens
 
-    private Image blueDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"blue.png"));
-    private ImageView blue = new ImageView(blueDisk);
+    private Image greenDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"green.png")); //Image of green token
+    private ImageView green = new ImageView(greenDisk); //ImageView of green token
 
-    private Image holeDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"hole.png"));
-    private ImageView hole = new ImageView(holeDisk);
+    private Image blueDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"blue.png")); //Image of blue token
+    private ImageView blue = new ImageView(blueDisk); //ImageView of blue token
 
-    private Image blockDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"block.png"));
-    private ImageView block = new ImageView(blockDisk);
+    private Image holeDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"hole.png")); //Image of hole
+    private ImageView hole = new ImageView(holeDisk); //ImageView of hole
 
+    private Image blockDisk = new Image(getClass().getResourceAsStream(RESOURCES_DIR+"block.png")); //Image of blocker
+    private ImageView block = new ImageView(blockDisk); //ImageView of blocker
 
 
     public void init() {
