@@ -46,12 +46,14 @@ public class WaterConfig implements Configuration {
             }
 
             //empty
-            if (current != 0){
+            else if (current != 0){
                 temp.add(i, this.buckets.get(i));
                 neighbors.add(new WaterConfig(desiredAmount, temp));
                 temp = this.buckets;
                 current = temp.remove(i);
             }
+
+
         }
         return neighbors;
     }

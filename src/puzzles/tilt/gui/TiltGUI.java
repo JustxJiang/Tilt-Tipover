@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import puzzles.common.Observer;
 import puzzles.tilt.model.TiltModel;
@@ -59,9 +60,12 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
         //top
         FlowPane top = new FlowPane();
+        message.setFont(Font.font("Elephant"));
+        message.setMinSize(50,50);
         message.setText("Loaded: " + file);
-        borderPane.setTop(message);
-        top.setAlignment(Pos.TOP_CENTER);
+        top.getChildren().add(message);
+        borderPane.setTop(top);
+        top.setAlignment(Pos.CENTER);
 
 
         //right
@@ -86,10 +90,16 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             model.reset();
             middle.setCenter(board());
         });
+
         Button hint = new Button("Hint");
         hint.setOnAction(e -> {
-            model.getHint();
-            middle.setCenter(board());
+            try{
+                model.getHint();
+                middle.setCenter(board());
+            }catch(Exception x){
+                message.setText("No Hint because there is no solution. Don't Believe Me? Try It Yourself.");
+            }
+
         });
         rightPanel.getChildren().addAll(load, reset, hint);
         borderPane.setRight(rightPanel);
@@ -125,7 +135,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             model.tiltRight();
             middle.setCenter(board());
         });
-
+        middle.setMaxSize((50*model.getDimensions())+50, (50*model.getDimensions())+50);
         middle.setTop(up);
         middle.setBottom(down);
         middle.setLeft(left);
@@ -134,7 +144,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
 
 
         middle.setCenter(board());
-        Scene scene = new Scene(borderPane,800,800);
+        Scene scene = new Scene(borderPane,250*model.getDimensions(),250*model.getDimensions());
         stage.setScene(scene);
         stage.show();
     }
@@ -190,7 +200,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
             }
         }
         center.setGridLinesVisible(true);
-        center.setMinSize(400,400);
+        center.setMinSize(50*model.getDimensions(),50*model.getDimensions());
         return center;
     }
 
@@ -200,7 +210,7 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
         // if the message is file loaded, recreate the board with the dimension and
         // set every button in the grid with the info from the model
         if (model.gameOver()) {
-            message.setText("You Won. Load New Game, Reset Board, or play around.");
+            message.setText("You Won. Load New Game, Reset Board, or Play Around.");
             board();
 
         }else if (msg.equals(model.LOADED)){

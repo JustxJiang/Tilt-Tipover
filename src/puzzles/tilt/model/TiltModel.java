@@ -193,7 +193,7 @@ public class TiltModel {
      */
     public void reset(){
         loadBoardFromFile(file);
-        alertObservers("reset");
+        alertObservers("Board Reset.");
     }
 
     /**
