@@ -144,12 +144,12 @@ public class TiltPTUI implements Observer<TiltModel, String> {
 
     @Override
     public void update(TiltModel model, String message) {
-        if (message.equals(TiltModel.LOADED)){ // game is loaded successfully
+        if (message.equals(TiltModel.LOADED)){
             System.out.println("Game Loaded");
             displayBoard();
-        }else if (message.equals(TiltModel.LOAD_FAILED)){ //Game failed to load
+        }else if (message.equals(TiltModel.LOAD_FAILED)){
             System.out.println("Error Loading Game");
-        } else if (message.startsWith(TiltModel.HINT_PREFIX)) { //Model is reporting a  hint
+        } else if (message.startsWith(TiltModel.HINT_PREFIX)) {
             System.out.println(message);
         }else{
             System.out.println(message);

@@ -15,9 +15,13 @@ public class TipOverModel {
     /** the current configuration */
     private TipOverConfig currentConfig;
     private String currentFile;
-    public static String LOADED = "loaded";
-    public static String LOAD_FAILED = "loadFailed";
-    public static String HINT_PREFIX = "> Next Step!";
+    public static String LOADED = "Loaded!";
+    public static String LOAD_FAILED = "Load failed!";
+    public static String HINT_PREFIX = "Next step!";
+    public static String RESET = "Puzzle reset!";
+    public static String WIN = "You win!";
+    public static String WON = "This board has already been solved!";
+    public static String NO_SOLUTION = "No solution!";
 
     public TipOverModel(String filename) {
         currentFile = filename;
@@ -47,7 +51,13 @@ public class TipOverModel {
     public void loadBoardFromFile(String filename) {
         try{
             currentConfig = new TipOverConfig(filename);
-            alertObservers(LOADED);
+            if(filename.equals(currentFile)) {
+                alertObservers(RESET);
+            }
+            else{
+                alertObservers(LOADED);
+            }
+            currentFile = filename;
         }
         catch (IOException e) {
             alertObservers(LOAD_FAILED);
@@ -55,65 +65,96 @@ public class TipOverModel {
     }
 
     public void moveNorth() {
+        if(gameOver()) {
+            alertObservers(WON);
+            return;
+        }
         TipOverConfig newConfig = new TipOverConfig(currentConfig, "up");
         if(newConfig.isValid()){
-            alertObservers("Move North");
             currentConfig = newConfig;
+            alertObservers(currentConfig.getMessage());
         }
         else{
-            alertObservers("Invalid Move");
+            alertObservers(newConfig.getMessage());
         }
     }
     public void moveSouth() {
-        TipOverConfig newConfig = new TipOverConfig(currentConfig, "down");
-        if(newConfig.isValid()){
-            alertObservers("Move South");
-            currentConfig = newConfig;
+        if(gameOver()) {
+            alertObservers(WON);
+            return;
         }
-        else{
-            alertObservers("Invalid Move");
+        TipOverConfig newConfig = new TipOverConfig(currentConfig, "down");
+        if (newConfig.isValid()) {
+            currentConfig = newConfig;
+            alertObservers(currentConfig.getMessage());
+        } else {
+            alertObservers(newConfig.getMessage());
         }
     }
     public void moveEast() {
-        TipOverConfig newConfig = new TipOverConfig(currentConfig, "right");
-        if(newConfig.isValid()){
-            alertObservers("Move East");
-            currentConfig = newConfig;
+        if(gameOver()) {
+            alertObservers(WON);
+            return;
         }
-        else{
-            alertObservers("Invalid Move");
+        TipOverConfig newConfig = new TipOverConfig(currentConfig, "right");
+        if (newConfig.isValid()) {
+            currentConfig = newConfig;
+            alertObservers(currentConfig.getMessage());
+        } else {
+            alertObservers(newConfig.getMessage());
         }
     }
     public void moveWest() {
-        TipOverConfig newConfig = new TipOverConfig(currentConfig, "left");
-        if(newConfig.isValid()){
-            alertObservers("Move West");
-            currentConfig = newConfig;
+        if(gameOver()) {
+            alertObservers(WON);
+            return;
         }
-        else{
-            alertObservers("Invalid Move");
+        TipOverConfig newConfig = new TipOverConfig(currentConfig, "left");
+        if (newConfig.isValid()) {
+            currentConfig = newConfig;
+            alertObservers(currentConfig.getMessage());
+        } else {
+            alertObservers(newConfig.getMessage());
         }
     }
     public boolean gameOver() {
         return currentConfig.isSolution();
     }
     public void getHint() {
-        Collection<Configuration> hint = Solver.solve(currentConfig);
-        String direction = ((TipOverConfig) hint.toArray()[1]).getLastMove();
-        switch(direction){
-            case "up":
-                moveNorth();
-                break;
-            case "down":
-                moveSouth();
-                break;
-            case "left":
-                moveWest();
-                break;
-            case "right":
-                moveEast();
+        String direction = null;
+        if(gameOver()) {
+            alertObservers(WON);
+            return;
         }
-        alertObservers(HINT_PREFIX);
+        try {
+            Collection<Configuration> hint = Solver.solve(currentConfig);
+            direction = ((TipOverConfig) hint.toArray()[1]).getLastMove();
+            switch(direction){
+                case "up":
+                    moveNorth();
+                    alertObservers(HINT_PREFIX);
+                    break;
+                case "down":
+                    moveSouth();
+                    alertObservers(HINT_PREFIX);
+                    break;
+                case "left":
+                    moveWest();
+                    alertObservers(HINT_PREFIX);
+                    break;
+                case "right":
+                    moveEast();
+                    alertObservers(HINT_PREFIX);
+                    break;
+                default:
+                {
+                    alertObservers(NO_SOLUTION);
+                    break;
+                }
+            }
+        } catch (NullPointerException exception){
+            alertObservers(NO_SOLUTION);
+        }
     }
     public void reset() {
         loadBoardFromFile(currentFile);

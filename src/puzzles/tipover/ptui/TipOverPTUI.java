@@ -7,6 +7,7 @@ import puzzles.tipover.model.TipOverModel;
 import puzzles.tipover.model.TipOverModel;
 import puzzles.tipover.solver.TipOver;
 
+import java.io.IOException;
 import java.sql.SQLOutput;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
@@ -20,15 +21,21 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
 
 
     public TipOverPTUI(String filename) {
-        model = new TipOverModel(filename);
-        model.addObserver(this);
-        in = new Scanner(System.in);
-        gameOn = true;
+        try {
+            model = new TipOverModel(filename);
+            model.addObserver(this);
+            in = new Scanner(System.in);
+            gameOn = true;
+            this.filename = filename;
+        } catch (RuntimeException e)
+        {
+            System.out.println("Please enter a valid file name!");
+        }
     }
 
     public void loadFromFile(String filename) {
-        model.loadBoardFromFile("data/tipover/" + filename);
         this.filename = filename;
+        model.loadBoardFromFile(filename);
     }
 
 
@@ -67,6 +74,7 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
     }
 
     private void gameLoop(){
+        System.out.println("Loaded: " + filename + "\n");
         displayBoard();
         System.out.println("h(int)              -- hint next move\n" +
                 "l(oad) filename     -- load new puzzle file\n" +
@@ -75,98 +83,103 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
                 "r(eset)             -- reset the current game\n");
 
         while(gameOn) {
-            String command = in.nextLine().strip();
-            String prefix = command.substring(0, 1);
-            switch(prefix) {
-                case "q":
-                case "Q":
-                {
-                    gameOn = false;
-                    break;
-                }
-                case "h":
-                case "H":
-                {
-                    model.getHint();
-                    displayBoard();
-                    break;
-                }
-                case "l":
-                case "L":
-                {
-                    String filename = command.substring(1).strip();
-                    loadFromFile(filename);
-                    break;
-                }
-                case "m":
-                case "M":
-                {
-                    String direction = command.substring(1).strip();
-                    switch(direction) {
-                        case "N": {
-                            model.moveNorth();
-                            break;
-                        }
-                        case "S": {
-                            model.moveSouth();
-                            break;
-                        }
-                        case "E": {
-                            model.moveEast();
-                            break;
-                        }
-                        case "W": {
-                            model.moveWest();
-                            break;
-                        }
-                        default: {
-                            System.out.println("Please specify a direction to move {N|S|E|W}");
-                            break;
-                        }
+            try {
+                String command = in.nextLine().strip();
+                String prefix = command.substring(0, 1);
+                switch (prefix) {
+                    case "q":
+                    case "Q": {
+                        gameOn = false;
+                        break;
                     }
-                    displayBoard();
-                    break;
+                    case "h":
+                    case "H": {
+                        model.getHint();
+                        displayBoard();
+                        break;
+                    }
+                    case "l":
+                    case "L": {
+                        String filename = command.substring(1).strip();
+                        loadFromFile(filename);
+                        break;
+                    }
+                    case "m":
+                    case "M": {
+                        String direction = command.substring(1).strip();
+                        switch (direction) {
+                            case "N": {
+                                model.moveNorth();
+                                break;
+                            }
+                            case "S": {
+                                model.moveSouth();
+                                break;
+                            }
+                            case "E": {
+                                model.moveEast();
+                                break;
+                            }
+                            case "W": {
+                                model.moveWest();
+                                break;
+                            }
+                            default: {
+                                System.out.println("Please specify a direction to move {N|S|E|W}\n");
+                                break;
+                            }
+                        }
+                        displayBoard();
+                        break;
+                    }
+                    case "r":
+                    case "R": {
+                        model.reset();
+                        break;
+                    }
+                    default: {
+                        displayBoard();
+                        System.out.println("h(int)              -- hint next move\n" +
+                                "l(oad) filename     -- load new puzzle file\n" +
+                                "m(ove) {N|S|E|W}    -- move the tipper in the given direction\n" +
+                                "q(uit)              -- quit the game\n" +
+                                "r(eset)             -- reset the current game");
+                        break;
+                    }
                 }
-                case "r":
-                case "R":
-                {
-                    model.reset();
-                    break;
-                }
-                default: {
-                    displayBoard();
-                    System.out.println("h(int)              -- hint next move\n" +
-                            "l(oad) filename     -- load new puzzle file\n" +
-                            "m(ove) {N|S|E|W}    -- move the tipper in the given direction\n" +
-                            "q(uit)              -- quit the game\n" +
-                            "r(eset)             -- reset the current game");
-                    break;
-                }
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Please enter a command: ");
             }
-
         }
-
     }
     
 
     @Override
     public void update(TipOverModel model, String msg) {
-        if (msg.equals(TipOverModel.LOADED)){
-            System.out.println("Loaded: data/tipover/\"" + filename);
+        if(msg.equals(TipOverModel.WON))
+        {
+            System.out.println("> " + msg + "\n");
+        }
+        else if(model.gameOver() || msg.equals(TipOverModel.WIN)) {
+            System.out.println("> You win!");
+        }
+        else if (msg.equals(TipOverModel.LOADED)){
+            System.out.println("> Loaded: " + filename + "\n");
             displayBoard();
             return;
-        }else if (msg.equals(TipOverModel.LOAD_FAILED)){
-            System.out.println("Error Loading Game");
-            return;
-        }else if(model.gameOver()) {
-
+        } else if(msg.equals(TipOverModel.RESET)) {
+            System.out.println("> " + msg + "\n");
+            displayBoard();
         }
-
-        else if (msg.startsWith(TipOverModel.HINT_PREFIX)) {
-            System.out.println(msg);
+        else if (msg.equals(TipOverModel.LOAD_FAILED)){
+            System.out.println("> Error Loading: " + filename + "\n");
+            return;
+        } else if (msg.startsWith(TipOverModel.HINT_PREFIX)) {
+            System.out.println("> " + msg + "\n");
             //don't display board
             return;
         }
+        else System.out.println("> " + msg + "\n");
     }
     public void run(){
         while(true){

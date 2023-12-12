@@ -24,6 +24,7 @@ public class TipOverConfig implements Configuration {
     private Point end = new Point();
     private Point tipper = new Point();
     private String lastMove;
+    private String message;
 
     private boolean isValid;
 
@@ -50,6 +51,7 @@ public class TipOverConfig implements Configuration {
     }
 
     //This might be the worst code I've ever written
+    //Code could be drastically shortened by splitting into separate functions, but I am too afraid to break it
     public TipOverConfig(TipOverConfig other, String direction) {
         boolean onTower = false;
         this.puzzleRows = other.getRows();
@@ -59,6 +61,7 @@ public class TipOverConfig implements Configuration {
         this.start = new Point(other.start.x, other.start.y);
         this.end = new Point(other.end.x, other.end.y);
         this.isValid = true;
+        this.message = "";
 
 
         for (int i = 0; i < getRows(); i++) {
@@ -75,12 +78,14 @@ public class TipOverConfig implements Configuration {
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
                     //Tests in bounds
                     if (tipper.x - (towerHeight) < 0) {
+                        message = "Out of bounds!";
                         valid = false;
                     } else {
                         //Tests for obstruction
                         for (int test = 1; test <= towerHeight; test++) {
                             if (Character.getNumericValue(this.getVal(tipper.x - test, tipper.y)) > 0) {
                                 valid = false;
+                                message = "Tower is obstructed!";
                                 break;
                             }
                         }
@@ -91,25 +96,31 @@ public class TipOverConfig implements Configuration {
                         for (int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x - set][tipper.y] = '1';
                         }
+                        message = "A tower has been tipped over!";
                     } else if (tipper.x - 1 >= 0) {
                         if (Character.getNumericValue(this.getVal(tipper.x - 1, tipper.y)) > 0) {
                             tipper.x--;
                         } else {
+                            message = "Out of bounds!";
                             this.isValid = false;
                         }
                     } else {
+                        message = "Out of bounds!";
                         this.isValid = false;
                     }
                     if (this.puzzleGrid[tipper.x][tipper.y] == '0') {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
                 } else if (tipper.x - 1 >= 0) {
                     if (Character.getNumericValue(this.getVal(tipper.x - 1, tipper.y)) > 0) {
                         tipper.x--;
                     } else {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
                 } else {
+                    message = "Out of bounds!";
                     this.isValid = false;
                 }
                 break;
@@ -120,12 +131,14 @@ public class TipOverConfig implements Configuration {
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
                     //Tests in bounds
                     if (tipper.x + (towerHeight) >= this.puzzleRows) {
+                        message = "Out of bounds!";
                         valid = false;
                     } else {
                         //Tests for obstruction
                         for (int test = 1; test <= towerHeight; test++) {
                             if (Character.getNumericValue(this.getVal(tipper.x + test, tipper.y)) > 0) {
                                 valid = false;
+                                message = "Tower is obstructed!";
                                 break;
                             }
                         }
@@ -136,16 +149,20 @@ public class TipOverConfig implements Configuration {
                         for (int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x + set][tipper.y] = '1';
                         }
+                        message = "A tower has been tipped over!";
                     } else if (tipper.x + 1 < this.getRows()) {
                         if (Character.getNumericValue(this.getVal(tipper.x + 1, tipper.y)) > 0) {
                             tipper.x++;
                         } else {
+                            message = "Out of bounds!";
                             this.isValid = false;
                         }
                     } else {
+                        message = "Out of bounds!";
                         this.isValid = false;
                     }
                     if (this.puzzleGrid[tipper.x][tipper.y] == '0') {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
 
@@ -153,9 +170,11 @@ public class TipOverConfig implements Configuration {
                     if (Character.getNumericValue(this.getVal(tipper.x + 1, tipper.y)) > 0) {
                         tipper.x++;
                     } else {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
                 } else {
+                    message = "Out of bounds!";
                     this.isValid = false;
                 }
                 break;
@@ -166,12 +185,14 @@ public class TipOverConfig implements Configuration {
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
                     //Tests in bounds
                     if (tipper.y - (towerHeight) < 0) {
+                        message = "Out of bounds!";
                         valid = false;
                     } else {
                         //Tests for obstruction
                         for (int test = 1; test <= towerHeight; test++) {
                             if (Character.getNumericValue(this.getVal(tipper.x, tipper.y - test)) > 0) {
                                 valid = false;
+                                message = "Tower is obstructed!";
                                 break;
                             }
                         }
@@ -182,25 +203,31 @@ public class TipOverConfig implements Configuration {
                         for (int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x][tipper.y - set] = '1';
                         }
+                        message = "A tower has been tipped over!";
                     } else if (tipper.y - 1 >= 0) {
                         if (Character.getNumericValue(this.getVal(tipper.x, tipper.y - 1)) > 0) {
                             tipper.y--;
                         } else {
+                            message = "Out of bounds!";
                             this.isValid = false;
                         }
                     } else {
+                        message = "Out of bounds!";
                         this.isValid = false;
                     }
                     if (this.puzzleGrid[tipper.x][tipper.y] == '0') {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
                 } else if (tipper.y - 1 >= 0) {
                     if (Character.getNumericValue(this.getVal(tipper.x, tipper.y - 1)) > 0) {
                         tipper.y--;
                     } else {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
                 } else {
+                    message = "Out of bounds!";
                     this.isValid = false;
                 }
                 break;
@@ -211,12 +238,14 @@ public class TipOverConfig implements Configuration {
                     int towerHeight = Character.getNumericValue(this.getVal(tipper.x, tipper.y));
                     //Tests in bounds
                     if (tipper.y + (towerHeight) >= this.puzzleCols) {
+                        message = "Out of bounds!";
                         valid = false;
                     } else {
                         //Tests for obstruction
                         for (int test = 1; test <= towerHeight; test++) {
                             if (Character.getNumericValue(this.getVal(tipper.x, tipper.y + test)) > 0) {
                                 valid = false;
+                                message = "Tower is obstructed!";
                                 break;
                             }
                         }
@@ -227,25 +256,31 @@ public class TipOverConfig implements Configuration {
                         for (int set = 0; set < towerHeight; ++set) {
                             this.puzzleGrid[tipper.x][tipper.y + set] = '1';
                         }
+                        message = "A tower has been tipped over!";
                     } else if (tipper.y + 1 < this.getCols()) {
                         if (Character.getNumericValue(this.getVal(tipper.x, tipper.y + 1)) > 0) {
                             tipper.y++;
                         } else {
+                            message = "Out of bounds!";
                             this.isValid = false;
                         }
                     } else {
+                        message = "Out of bounds!";
                         this.isValid = false;
                     }
                     if (this.puzzleGrid[tipper.x][tipper.y] == '0') {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
                 } else if (tipper.y + 1 < this.getCols()) {
                     if (Character.getNumericValue(this.getVal(tipper.x, tipper.y + 1)) > 0) {
                         tipper.y++;
                     } else {
+                        message = "No crate or tower there!";
                         this.isValid = false;
                     }
                 } else {
+                    message = "Out of bounds!";
                     this.isValid = false;
                 }
                 break;
@@ -317,6 +352,11 @@ public class TipOverConfig implements Configuration {
     public String getLastMove(){
         return lastMove;
     }
+
+    public String getMessage(){
+        return message;
+    }
+
 
     @Override
     public String toString() {
