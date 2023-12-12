@@ -98,11 +98,14 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
         Button hint = new Button("Hint");
         hint.setPadding(new Insets(5));
         hint.setOnAction((ActionEvent event) -> {
-            if (!model.gameOver()) {
+            if (model.gameOver()) {
+                message.setText(TipOverModel.WON);
+                main.setTop(message);
+            } else {
                 model.getHint();
+                main.setCenter(updateBoard());
+                main.setTop(message);
             }
-            main.setCenter(updateBoard());
-            main.setTop(message);
         });
         //Code for directional buttons
         GridPane buttons = new GridPane();
@@ -188,9 +191,9 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
     public void update(TipOverModel tipOverModel, String msg) {
         //Won is used to restrict movement after reaching the goal
         if (msg.equals(TipOverModel.WON)) {
-            message.setText(msg);
+            message.setText(TipOverModel.WON);
         } else if (model.gameOver() || msg.equals(TipOverModel.WIN)) {
-            message.setText("You win!");
+            message.setText(TipOverModel.WIN);
         } else {
             message.setText(msg);
         }
