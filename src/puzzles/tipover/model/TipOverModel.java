@@ -23,6 +23,10 @@ public class TipOverModel {
     public static String WON = "This board has already been solved!";
     public static String NO_SOLUTION = "No solution!";
 
+    /**
+     * Constructor for the TipOver model
+     * @param filename The file to load
+     */
     public TipOverModel(String filename) {
         currentFile = filename;
         try {
@@ -31,23 +35,42 @@ public class TipOverModel {
             throw new RuntimeException(e);
         }
     }
+    /**
+     * Getter for value
+     * @param row Row to get value from
+     * @param col Column to get value from
+     */
     public char getVal(int row, int col) {
         return currentConfig.getVal(row, col);
     }
+    /**
+     * Returns amount of rows
+     */
     public int getRows() {
         return currentConfig.getRows();
     }
+    /**
+     * Returns amount of columns
+     */
     public int getCols() {
         return currentConfig.getCols();
     }
-
+    /**
+     * Returns the coordinates of the tipper
+     */
     public Point getTipper(){
         return currentConfig.getTipper();
     }
+    /**
+     * Returns the coordinates of the end
+     */
     public Point getEnd(){
         return currentConfig.getEnd();
     }
-
+    /**
+     * Loads a board from file
+     * @param filename File to load
+     */
     public void loadBoardFromFile(String filename) {
         try{
             currentConfig = new TipOverConfig(filename);
@@ -63,7 +86,9 @@ public class TipOverModel {
             alertObservers(LOAD_FAILED);
         }
     }
-
+    /**
+     * Moves the tipper North
+     */
     public void moveNorth() {
         if(gameOver()) {
             alertObservers(WON);
@@ -78,6 +103,9 @@ public class TipOverModel {
             alertObservers(newConfig.getMessage());
         }
     }
+    /**
+     * Moves the tipper South
+     */
     public void moveSouth() {
         if(gameOver()) {
             alertObservers(WON);
@@ -91,6 +119,9 @@ public class TipOverModel {
             alertObservers(newConfig.getMessage());
         }
     }
+    /**
+     * Moves the tipper East
+     */
     public void moveEast() {
         if(gameOver()) {
             alertObservers(WON);
@@ -104,6 +135,9 @@ public class TipOverModel {
             alertObservers(newConfig.getMessage());
         }
     }
+    /**
+     * Moves the tipper West
+     */
     public void moveWest() {
         if(gameOver()) {
             alertObservers(WON);
@@ -117,9 +151,15 @@ public class TipOverModel {
             alertObservers(newConfig.getMessage());
         }
     }
+    /**
+     * Checks the status of the game
+     */
     public boolean gameOver() {
         return currentConfig.isSolution();
     }
+    /**
+     * Gets the next hint
+     */
     public void getHint() {
         String direction = null;
         if(gameOver()) {
@@ -156,6 +196,9 @@ public class TipOverModel {
             alertObservers(NO_SOLUTION);
         }
     }
+    /**
+     * Resets the board
+     */
     public void reset() {
         loadBoardFromFile(currentFile);
     }

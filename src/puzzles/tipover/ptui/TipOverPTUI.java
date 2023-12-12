@@ -82,7 +82,9 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
         System.out.println(result);
     }
 
-
+    /**
+     * In charge of looping the game
+     */
     private void gameLoop(){
         System.out.println("Loaded: " + filename + "\n");
         displayBoard();
@@ -91,7 +93,7 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
                 "m(ove) {N|S|E|W}    -- move the tipper in the given direction\n" +
                 "q(uit)              -- quit the game\n" +
                 "r(eset)             -- reset the current game\n");
-
+        //Uses while to keep game running until quit
         while(gameOn) {
             try {
                 String command = in.nextLine().strip();
@@ -162,10 +164,15 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
             }
         }
     }
-    
 
+    /**
+     * Updates based on
+     * @param model the model to update
+     * @param msg the message sent by the observer
+     */
     @Override
     public void update(TipOverModel model, String msg) {
+        //Won is used to restrict movement after reaching the goal
         if(msg.equals(TipOverModel.WON))
         {
             System.out.println("> " + msg + "\n");
@@ -191,6 +198,9 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
         }
         else System.out.println("> " + msg + "\n");
     }
+    /**
+     * Runs the game loop from main
+     */
     public void run(){
         while(true){
             if(!gameOn) {
@@ -199,7 +209,9 @@ public class TipOverPTUI implements Observer<TipOverModel, String> {
             gameLoop();
         }
     }
-
+    /**
+     * The main method
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java TipOverPTUI filename");

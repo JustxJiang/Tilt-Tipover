@@ -1,5 +1,4 @@
 package puzzles.tipover.gui;
-
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,13 +12,11 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import puzzles.common.Observer;
 import puzzles.tipover.model.TipOverModel;
-
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import puzzles.tipover.solver.TipOver;
-
 import java.awt.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +25,9 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
     private final Label message = new Label();
     private TipOverModel model;
     private String filename;
-
+    /**
+     * Main method
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java TipOverGUI filename");
@@ -41,7 +40,9 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
             }
         }
     }
-
+    /**
+     * Initializes the GUI
+     */
     public void init() {
         String filename = getParameters().getRaw().get(0);
 
@@ -53,7 +54,9 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
             System.out.println("Please enter a valid file name!");
         }
     }
-
+    /**
+     * Override the start method
+     */
     @Override
     public void start(Stage stage) throws Exception {
         //Creates a file chooser
@@ -139,14 +142,12 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
         toolbar.add(hint, 0, 2);
         toolbar.setAlignment(Pos.CENTER);
         toolbar.setPadding(new Insets(10));
-
         //Code to add directional buttons and toolbar to sidebar
         GridPane sidebar = new GridPane();
         sidebar.add(buttons, 0, 0);
         sidebar.add(toolbar, 0, 1);
         sidebar.setAlignment(Pos.CENTER);
         sidebar.setPadding(new Insets(10));
-
         //Add all buttons to main
         main.setRight(sidebar);
         main.setPadding(new Insets(10));
@@ -157,12 +158,14 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
         stage.setTitle("Tip Over");
         stage.show();
     }
-
+    /**
+     * Creates an updated board based on the values
+     */
     private GridPane updateBoard() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setPadding(new Insets(10));
-
+        //Creates a new GridPane with updated values
         for (int row = 0; row < model.getRows(); row++) {
             for (int col = 0; col < model.getCols(); col++) {
                 Label label = new Label(model.getVal(row, col) + "");
@@ -178,9 +181,12 @@ public class TipOverGUI extends Application implements Observer<TipOverModel, St
 
         return grid;
     }
-
+    /**
+     * Override the update method
+     */
     @Override
     public void update(TipOverModel tipOverModel, String msg) {
+        //Won is used to restrict movement after reaching the goal
         if (msg.equals(TipOverModel.WON)) {
             message.setText(msg);
         } else if (model.gameOver() || msg.equals(TipOverModel.WIN)) {

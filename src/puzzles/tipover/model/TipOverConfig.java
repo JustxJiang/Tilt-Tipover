@@ -1,7 +1,5 @@
 package puzzles.tipover.model;
 
-// TODO: implement your TipOverConfig for the common solver
-
 import puzzles.common.solver.Configuration;
 import puzzles.tilt.model.TiltConfig;
 
@@ -25,10 +23,12 @@ public class TipOverConfig implements Configuration {
     private Point tipper = new Point();
     private String lastMove;
     private String message;
-
     private boolean isValid;
 
-
+    /**
+     * Constructor for TipOver
+     * @param filename The filename to be used
+     */
     public TipOverConfig(String filename) throws IOException {
         try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
             String[] fields = in.readLine().split("\\s+");
@@ -52,6 +52,11 @@ public class TipOverConfig implements Configuration {
 
     //This might be the worst code I've ever written
     //Code could be drastically shortened by splitting into separate functions, but I am too afraid to break it
+    /**
+     * Alternate constructor for TipOver
+     * @param other Creates a copy of the board and moves in the specified direction
+     * @param direction The direction to move the tipper
+     */
     public TipOverConfig(TipOverConfig other, String direction) {
         boolean onTower = false;
         this.puzzleRows = other.getRows();
@@ -70,6 +75,7 @@ public class TipOverConfig implements Configuration {
         if (Character.getNumericValue(this.getVal(tipper.x, tipper.y)) > 1) {
             onTower = true;
         }
+        //Switch cases could have been split into a separate method to reduce size
         switch (direction) {
             case "up":
                 lastMove = "up";
@@ -124,6 +130,7 @@ public class TipOverConfig implements Configuration {
                     this.isValid = false;
                 }
                 break;
+                //Lots of duplicate code which could be removed and changed into a singular function
             case "down":
                 lastMove = "down";
                 if (onTower) {
@@ -284,34 +291,34 @@ public class TipOverConfig implements Configuration {
                     this.isValid = false;
                 }
                 break;
+                //I wish I had time to fix this
         }
     }
-
+    /**
+     * Override equals method
+     */
     @Override
     public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
         TipOverConfig that = (TipOverConfig) o;
-//        for(int row = 0; row < puzzleRows; row++)
-//        {
-//            for(int col = 0; col < puzzleCols; col++)
-//            {
-//                checkEqual = puzzleGrid[row][col] == that.puzzleGrid[row][col];
-//            }
-//        }
         return puzzleRows == that.puzzleRows && puzzleCols == that.puzzleCols && Arrays.deepEquals(puzzleGrid, that.puzzleGrid) && tipper.x == that.tipper.x && tipper.y == that.tipper.y;
     }
-
+    /**
+     * Override hashCode method
+     */
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(puzzleGrid) + Objects.hashCode(tipper.x) + Objects.hashCode(tipper.y);
     }
-
+    /**
+     * Override isSolution method
+     */
     @Override
     public boolean isSolution() {
         return (tipper.x == end.x && tipper.y == end.y);
     }
-
+    /**
+     * Override getNeighbors method
+     */
     @Override
     public Collection<Configuration> getNeighbors() {
         LinkedList<Configuration> neighbors = new LinkedList<>();
@@ -324,40 +331,61 @@ public class TipOverConfig implements Configuration {
         }
         return neighbors;
     }
-
+    /**
+     * Gets the number of rows
+     */
     public int getRows() {
         return this.puzzleRows;
     }
-
+    /**
+     * Gets the number of cols
+     */
     public int getCols() {
         return this.puzzleCols;
     }
 
-
+    /**
+     * Gets the specified value
+     * @param row Row to get
+     * @param col Column to get
+     */
     public char getVal(int row, int col) {
         return this.puzzleGrid[row][col];
     }
-
+    /**
+     * Checks the validity of the move
+     */
     public boolean isValid()
     {
         return isValid;
     }
-
+    /**
+     * Gets the coordinates of the tipper
+     */
     public Point getTipper() {
         return tipper;
     }
+    /**
+     * Gets the coordinates of the end
+     */
     public Point getEnd() {
         return end;
     }
+    /**
+     * Gets the previous move
+     */
     public String getLastMove(){
         return lastMove;
     }
-
+    /**
+     * Gets the message supplied by the new move
+     */
     public String getMessage(){
         return message;
     }
-
-
+    /**
+     * Override toString method
+     */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
