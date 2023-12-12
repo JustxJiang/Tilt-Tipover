@@ -97,7 +97,12 @@ public class TiltGUI extends Application implements Observer<TiltModel, String> 
                 model.getHint();
                 middle.setCenter(board());
             }catch(Exception x){
-                message.setText("No Hint because there is no solution. Don't Believe Me? Try It Yourself.");
+                if(model.gameOver()){
+                    message.setText("No Hint Available. You Already Won.");
+                }
+                else{
+                    message.setText("No Hint because there is no solution. Don't Believe Me? Try It Yourself.");
+                }
             }
 
         });
