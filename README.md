@@ -30,7 +30,7 @@ Clone the repository:
 bash
 Copy code
 git clone https://github.com/JustxJiang/Tilt-Tipover.git
-Open the project in a Java IDE (such as IntelliJ IDEA or Eclipse).
+Open the project in a Java IDE (such as IntelliJ IDEA or Eclipse). VS Code works too!
 Build and run the project, selecting either GUI or PTUI mode to launch the game.
 Usage
 Choose to start the game in either GUI or PTUI mode.
@@ -38,7 +38,7 @@ Select a game (Tilt or Tipover) or try out the pre-project puzzles.
 In PTUI, follow the prompts; in GUI, use interactive controls to play.
 Use the solver to receive hints or auto-complete the game.
 Collaboration and Challenges
-This project was a collaboration with [Partner's Name or GitHub handle]. Working as a team, we encountered obstacles around:
+This project was a collaboration with awd8767. Working as a team, we encountered obstacles around:
 
 Code Integration: Combining each other's code required extensive testing and coordination to ensure the solver worked seamlessly across both games.
 Design Differences: We sometimes had different ideas about interface design and functionality, which led to productive discussions and ultimately stronger design choices.
