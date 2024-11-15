@@ -7,7 +7,7 @@ Tilt Tiltover is a two-in-one game application that includes:
 Tilt: A game where players tilt a board to guide pieces to target positions.
 Tipover: A game that involves tipping stacks of crates to form connected paths.
 The games share a common solver that uses a unified logic framework to handle both games, demonstrating modular programming and adaptability.
-(Warning: This project was cloned 
+(Warning: This project was cloned because it was under another organization group (for RIT) so all commits may not be there.)
 
 Pre-Project Activities
 To prepare for the main project, we developed solvers for:
