@@ -29,7 +29,7 @@ Installation
 Clone the repository:
 bash
 Copy code
-git clone [GitHub URL]
+git clone https://github.com/JustxJiang/Tilt-Tipover.git
 Open the project in a Java IDE (such as IntelliJ IDEA or Eclipse).
 Build and run the project, selecting either GUI or PTUI mode to launch the game.
 Usage
